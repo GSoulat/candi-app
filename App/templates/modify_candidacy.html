@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %} 
+    Modifier candidature
+{% endblock %}
+
+{% block content %}
+    <div class='container mt-5'>
+        <h1 class="text-center"> Modifier candidature </h1>
+        <br>
+        <form method="POST" class="form-register">
+            {{ form.hidden_tag() }}
+
+            {{ form.contact_full_name.label() }}
+            {{ form.contact_full_name(value=candidacy.contact_full_name, class="form-control") }}
+            <br>
+            {{ form.contact_email.label() }}
+            {{ form.contact_email(value=candidacy.contact_email, class="form-control") }}
+            <br>
+            {{ form.contact_mobilephone.label() }}
+            {{ form.contact_mobilephone(value=candidacy.contact_mobilephone, class="form-control") }}
+            <br>
+            {{ form.status.label() }}
+            {{ form.status(value=candidacy.status, class="form-control") }}
+            <br>
+            {{ form.submit(class="btn btn-lg btn-primary d-block", id="button")}}
+        </form>
+    </div>  
+{% endblock %}

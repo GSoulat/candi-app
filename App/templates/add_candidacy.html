@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}
+    Ajout candidature
+{% endblock %}
+{% block content%}
+<div class='container mt-5'>
+    <h1>Nouvelle Candidature</h1>
+    <form method="POST" class="form-register">
+        {{ form.hidden_tag() }}
+
+        {{ form.entreprise.label }}
+        {{ form.entreprise(size=32, class="form-control") }}
+        <br>
+
+        {{ form.contact_full_name.label }}
+        {{ form.contact_full_name(size=32, class="form-control") }}
+        <br>
+
+        {{ form.contact_email.label }}
+        {{ form.contact_email(size=32, class="form-control") }}
+        <br>
+
+        {{ form.contact_mobilephone.label }}
+        {{ form.contact_mobilephone(size=32, class="form-control") }}
+        <br>  
+
+
+        {{ form.submit(class="btn btn-lg btn-primary mt-4 d-block",id="button") }}
+    </form>
+</div>
+{% endblock %}
