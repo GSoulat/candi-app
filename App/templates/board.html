@@ -27,8 +27,10 @@ Board
       <tbody>
         {% for candidacy in user_candidacy%}
         <tr>
-          {% for info in range(lenght) %}
-          <td>{{ candidacy[info] }}</td>
+          {% for info in candidacy.keys()%}
+            {% if info not in ['id','user_id'] %}
+              <td>{{ candidacy[info] }}</td>
+            {% endif %}
           {% endfor %}
           {% if current_user.is_admin == False %}
           <td>
