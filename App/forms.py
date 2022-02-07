@@ -18,6 +18,7 @@ class AddCandidacy(FlaskForm):
     contact_full_name = StringField(label='contact_full_name', validators=[DataRequired()])
     contact_email = StringField(label='contact_email', validators=[DataRequired()])
     contact_mobilephone = StringField(label='contact_mobilephone')
+    print("En cours d'ajout")
     submit = SubmitField(label='Ajouter')
 
 class ModifyProfile(FlaskForm):
