@@ -54,6 +54,17 @@ def board_page():
     else:
         return render_template('board.html', lenght = len(usercandidacy_attributs), title = usercandidacy_attributs ,user_candidacy=Candidacy.find_by_user_id(current_user.id))
 
+@app.route('/profile/')
+@login_required
+def profile_page():
+
+    return render_template('profile.html')
+
+@app.route('/modify_profile/')
+@login_required
+def modify_profile_page():
+
+    return render_template('modify_profile.html')
 
 @app.route('/logout')
 def logout_page():
