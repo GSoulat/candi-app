@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}
+    
+{% endblock %}
+
+{% block content %}
+<section>
+  <h1>Analyses statistiques des alternance d'apprenants</h1>
+  <h2>La liste d'apprenants avec alternance</h2>
+  <div class="tbl-header">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <thead>
+        <tr>
+          {% for col_name in title %}
+          <th style="text-align:left">{{ col_name }}</th>
+
+          {% endfor %}
+          {% if current_user.is_admin == False %}
+          <th style="text-align:left"> action  </th>
+          {% endif %}
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div class="tbl-content">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <tbody>
+        {% for candidacy in user_candidacy%}
+        <tr>
+          {% for info in candidacy.keys()%}
+            {% if info not in ['id','user_id'] %}
+              <td>{{ candidacy[info] }}</td>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div>
+    <button class="btn btn-lg btn-primary mt-4 d-block" id="button">
+      <a href="{{ url_for('show_list_without_alternance') }}">Aprenants sans alternance</a>
+    </button>
+    <button class="btn btn-lg btn-primary mt-4 d-block" id="button">
+        <a href="{{ url_for('show_list_with_alternance') }}">Aprenants avec alternance</a>
+  
+    </button>
+    <button class="btn btn-lg btn-primary mt-4 d-block" id="button">
+        <a href="{{ url_for('show_list_with_alternance') }}">Status d'apprenants </a>
+  
+    </button>
+    
+    <div>
+        <div>
+          <button name="submit" type="submit" value="Save" onclick="myFunction()" class="button">Save</button>
+          <button name="submit" type="submit" value="Cancel" onclick="myFunction2()" class="button">Cancel</button>
+          <p id="saved"></p>
+        </div>
+      </div>
+</div>
+
+{% endblock %}
