@@ -59,6 +59,12 @@ Board
         <a href="{{ url_for('add_candidature') }}">Ajouter candidature</a>
       </button>
   </div>
+  {% else %}
+  <div>
+    <button class="btn btn-lg btn-primary mt-4 d-block" id="button">
+      <a href="{{ url_for('add_candidature') }}">Statistique d'apprenants</a>
+    </button>
+</div>
   {% endif %}
 </section>
 {% endblock %}
