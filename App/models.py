@@ -94,8 +94,8 @@ class Candidacy(db.Model):
     @classmethod
     def find_by_user_id(cls, user_id):
         candidacy_list=[]
-        for candidacy in cls.query.filter_by(user_id=user_id).with_entities(cls.entreprise, cls.contact_full_name, cls.contact_email, cls.contact_mobilephone,cls.date,cls.status).all():
-            candidacy_list.append(candidacy)
+        for candidacy in cls.query.filter_by(user_id=user_id).all():
+            candidacy_list.append(candidacy.json())
         return candidacy_list
 
     @classmethod
@@ -103,9 +103,6 @@ class Candidacy(db.Model):
         candidacy_list=[]
         for candidacy in cls.query.join(Users).with_entities(Users.first_name,cls.entreprise, cls.contact_full_name, cls.contact_email, cls.contact_mobilephone,cls.date,cls.status).all():
             candidacy_list.append(candidacy)
-            print('********************************')
-            print(candidacy_list)
-            print('********************************')
         return candidacy_list
 
     def save_to_db(self):
