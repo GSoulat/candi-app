@@ -21,8 +21,8 @@ class AddCandidacy(FlaskForm):
     print("En cours d'ajout")
     submit = SubmitField(label='Ajouter')
 
-class ModifyProfile(FlaskForm):
-    """[Form to modify profile]
+class ModifyPassword(FlaskForm):
+    """[Form to modify password]
     """
     email = EmailField(label="Adresse mail:", validators = [DataRequired()])
     current_password = PasswordField(label="Mot de passe actuel:", validators = [DataRequired()])
