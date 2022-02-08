@@ -70,7 +70,8 @@ def modify_profile_page():
         current_user.first_name = form.first_name.data
         current_user.email_address = form.email_address.data
         current_user.telephone_number = form.telephone_number.data
-        
+        # current_user.street_number = form.street_number.data
+
         db.session.add(current_user)
         db.session.commit()
         flash(f"Votre profil a été modifié avec succès.",category="success")

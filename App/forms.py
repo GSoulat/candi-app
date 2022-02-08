@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import PasswordField,EmailField,SubmitField,StringField
+from wtforms import PasswordField,EmailField,SubmitField,StringField, IntegerField
 from wtforms.validators import Length,DataRequired,Email,EqualTo,ValidationError,NumberRange
 from .models import Users
 
@@ -45,5 +45,6 @@ class ModifyProfile(FlaskForm):
     last_name = StringField(label="Nom", validators = [DataRequired(), Length(max=50)])
     first_name = StringField(label="Prénom", validators = [DataRequired(), Length(max=50)])
     email_address = EmailField(label="Adresse mail:", validators = [DataRequired()])
-    telephone_number = StringField(label='Numéro de mobile :', validators=[Length(max=10)])   # street_number = StringField(label="Adresse mail:", validators = [DataRequired(), NumberRange(), Length(max=5)])
+    telephone_number = StringField(label="Numéro de mobile :", validators=[Length(max=10)])   # street_number = StringField(label="Adresse mail:", validators = [DataRequired(), NumberRange(), Length(max=5)])
+    street_number = IntegerField(label="Numéro de rue", validators=[Length(max=5)])
     submit = SubmitField(label="Valider")

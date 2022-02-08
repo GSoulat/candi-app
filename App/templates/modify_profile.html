@@ -30,6 +30,14 @@ Modify your profile
         {% else %}
             {{ form.telephone_number(placeholder="Numéro de téléphone mobile", class="form-control") }}
         {% endif %}
+        <!-- <fieldset>
+            <legend>Adresse</legend>
+            {% if current_user.telephone_number %}
+                {{ form.street_number(value=current_user.street_number, class="form-control") }}
+            {% else %}
+                {{ form.street_number(placeholder="Numéro de votre rue", class="form-control") }}
+            {% endif %}
+        </fieldset> -->
         <br/>
         {{ form.submit(class="btn btn-lg btn-primary d-block", id="button")}}
     </form>
