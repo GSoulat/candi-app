@@ -165,25 +165,13 @@ def show_list_without_alternance():
 def disp_histogram_plot(df_to_disp):
     
     # 
-
+    fig = go.Figure()
 
     fig = make_subplots(rows=1, cols=2)
+
     fig = px.histogram(df_to_disp, x='Alternance', title = 'Apprenants avec / sans Alternance')
 
-    # fig.add_trace(
-    #         go.histogram(df_to_disp, x='Alternance', title = 'Apprenants avec / sans Alternance (using Plotly)'),
-    #         row=1, col=1
-    #     )
-
-    # fig.add_trace(
-    #         go.Scatter(x=[20, 30, 40], y=[50, 60, 70]),
-    #         row=1, col=2
-    #     )
-
-    
-    # fig.update_layout(title_text="Side By Side Subplots")
-    fig.update_layout(height=600, width=800, title_text="Side By Side Subplots")
-     # fig.show()
+    fig.update_layout(height=400, width=400)
 
     plot_json = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
@@ -222,20 +210,7 @@ def disp_pie_plot(df_to_disp):
     
     fig = px.pie(df_to_disp, values='Apprenants', names='Status', title = 'Apprenants avec / sans Alternance')
 
-    # fig.add_trace(
-    #         go.histogram(df_to_disp, x='Alternance', title = 'Apprenants avec / sans Alternance (using Plotly)'),
-    #         row=1, col=1
-    #     )
-
-    # fig.add_trace(
-    #         go.Scatter(x=[20, 30, 40], y=[50, 60, 70]),
-    #         row=1, col=2
-    #     )
-
-    
-    # fig.update_layout(title_text="Side By Side Subplots")
-    fig.update_layout(height=600, width=800, title_text="Side By Side Subplots")
-        # fig.show()
+    fig.update_layout(height=500, width=500)
 
     plot_json = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
