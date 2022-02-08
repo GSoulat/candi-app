@@ -72,8 +72,9 @@ class Candidacy(db.Model):
     contact_full_name = db.Column(db.String(length=50), nullable=False)
     contact_email = db.Column(db.String(length=50), nullable=True)
     contact_mobilephone = db.Column(db.String(length=50), nullable=True)
-    date = db.Column(db.String(), default=datetime.date.today())
+    date = db.Column(db.String(), nullable=False)
     status = db.Column(db.String(), nullable=True, default="En cours")
+    comment = db.Column(db.String(),nullable=True)
 
     def __repr__(self):
         return f' Candidat id : {self.user_id}'
@@ -87,7 +88,8 @@ class Candidacy(db.Model):
             'contact_email': self.contact_email,
             'contact_mobilephone': self.contact_mobilephone,
             'date': self.date,
-            'status': self.status
+            'status': self.status,
+            'comment': self.comment
             }
 
 
@@ -120,8 +122,8 @@ def init_db():
     #db.session.add( )
     Users(last_name="ben", first_name= "charles", email_address= "cb@gmail.com", password_hash= generate_password_hash("1234", method='sha256'), is_admin=True).save_to_db() 
     Users(last_name="beniac", first_name= "cha", email_address= "bb@gmail.com", password_hash= generate_password_hash("1234", method='sha256'), is_admin=False).save_to_db()
-    Candidacy(user_id = 1, entreprise = "facebook", contact_full_name = "mz", contact_email="mz@facebook.fb").save_to_db()
-    Candidacy(user_id = 1, entreprise = "google", contact_full_name = "lp", contact_email="lp@gmail.com").save_to_db()
+    #Candidacy(user_id = 1, entreprise = "facebook", contact_full_name = "mz", contact_email="mz@facebook.fb").save_to_db()
+    #Candidacy(user_id = 1, entreprise = "google", contact_full_name = "lp", contact_email="lp@gmail.com").save_to_db()
 
     
     # Insert all users from  "static/liste_apprenants.csv"

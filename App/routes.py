@@ -46,7 +46,7 @@ def board_page():
         [str]: [board page code different if the user is admin or not]
     """
     admin_candidacy_attributs = ["user_fisrt_name",'entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status']
-    usercandidacy_attributs = ['entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status']
+    usercandidacy_attributs = ['entreprise', 'ville entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status','comment']
 
 
     if (current_user.is_admin == True):  
@@ -72,7 +72,7 @@ def add_candidature():
     """
     form = AddCandidacy()
     if form.validate_on_submit():
-        Candidacy(user_id = current_user.id, entreprise = form.entreprise.data, contact_full_name = form.contact_full_name.data, contact_email = form.contact_email.data, contact_mobilephone = form.contact_mobilephone.data).save_to_db()
+        Candidacy(user_id = current_user.id, status = form.status.data, entreprise = form.entreprise.data, ville_entreprise = form.ville_entreprise.data, contact_full_name = form.contact_full_name.data, contact_email = form.contact_email.data, contact_mobilephone = form.contact_mobilephone.data, date =form.date.data).save_to_db()
         flash('Nouvelle Candidature ajouté ', category='success')
         return redirect(url_for('board_page'))
     return render_template('add_candidacy.html', form=form)
@@ -109,20 +109,25 @@ def modify_candidacy():
     form = ModifyCandidacy()
     candidacy_id = request.args.get('id')
     candidacy = Candidacy.query.filter_by(id = candidacy_id).first()
-
+    print(candidacy.json())
     if form.validate_on_submit():
         
         if candidacy:
+            candidacy.entreprise = form.entreprise.data
+            candidacy.ville_entreprise = form.ville_entreprise.data
             candidacy.contact_full_name = form.contact_full_name.data
             candidacy.contact_email = form.contact_email.data
             candidacy.contact_mobilephone = form.contact_mobilephone.data
             candidacy.status = form.status.data
+            candidacy.date =form.date.data
+            candidacy.comment = form.comment.data
             db.session.commit()
 
             flash(f"La candidature a bien été modifié",category="success")
             return redirect(url_for('board_page'))
         else:
             flash('Something goes wrong',category="danger")
+    form.comment.data = candidacy.comment
     return render_template('modify_candidacy.html', form=form , candidacy=candidacy.json())
     
 @app.route('/delete_candidacy')

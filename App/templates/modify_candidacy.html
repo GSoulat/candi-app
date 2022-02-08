@@ -23,6 +23,13 @@
             {{ form.status.label() }}
             {{ form.status(value=candidacy.status, class="form-control") }}
             <br>
+            {{ form.comment.label() }}
+            {{ form.comment(value=candidacy.comment, class="form-control") }}
+            <br>
+            {{ form.date.label() }}
+            {{ form.date(value=candidacy.date, class="form-control") }}
+            <br>
+            <br>
             {{ form.submit(class="btn btn-lg btn-primary d-block", id="button")}}
         </form>
     </div>  

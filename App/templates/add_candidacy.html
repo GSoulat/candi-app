@@ -22,9 +22,15 @@
 
         {{ form.contact_mobilephone.label }}
         {{ form.contact_mobilephone(size=32, class="form-control") }}
+        <br>
+        {{ form.status.label() }}
+        {{ form.status(class="form-control") }}
+        <br>
+        {{ form.date.label() }}
+        {{ form.date(value=Date_Today, class="form-control") }}
+        <br>
         <br>  
-
-
+        
         {{ form.submit(class="btn btn-lg btn-primary mt-4 d-block",id="button") }}
     </form>
 </div>
