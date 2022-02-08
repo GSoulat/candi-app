@@ -6,6 +6,13 @@ from .forms import Login, AddCandidacy, ModifyCandidacy, ModifyProfile
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
+import plotly.express as px
+import plotly
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import json as js
+import pandas as pd
+
 @app.route('/')
 @app.route('/home')
 def home_page():
@@ -155,5 +162,91 @@ def show_list_without_alternance():
         attributs = ["user_fisrt_name","user_last_name",'contact_email']
         return render_template('list_without_alternance.html', lenght = len(attributs), title = attributs, user_candidacy=Users.get_list_without_alternance())
 
+def disp_histogram_plot(df_to_disp):
+    
+    # 
 
+
+    fig = make_subplots(rows=1, cols=2)
+    fig = px.histogram(df_to_disp, x='Alternance', title = 'Apprenants avec / sans Alternance (using Plotly)')
+
+    # fig.add_trace(
+    #         go.histogram(df_to_disp, x='Alternance', title = 'Apprenants avec / sans Alternance (using Plotly)'),
+    #         row=1, col=1
+    #     )
+
+    # fig.add_trace(
+    #         go.Scatter(x=[20, 30, 40], y=[50, 60, 70]),
+    #         row=1, col=2
+    #     )
+
+    
+    # fig.update_layout(title_text="Side By Side Subplots")
+    fig.update_layout(height=600, width=800, title_text="Side By Side Subplots")
+        # fig.show()
+
+    plot_json = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return plot_json
+
+@app.route('/show_histogram')
+def show_histogram():
+        """[Allow to generate the template of statistic.html to display different statistif figures]
+
+    # Returns:
+    #     [str]: [Statistif page]
+    # """
+        full_list = Users.get_full_list()
+        full_list_df = pd.DataFrame(columns = ['Name', 'Alternance'])
+        unique_list = []
+
+        # find all the ones with alternance first
+        for user_info in full_list:
+            if (user_info[1] not in unique_list) and (user_info[4] == 'Alternance'):
+                unique_list.append(user_info[1])
+                full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[2], 'Alternance': True}, ignore_index=True)
+
+        for user_info in full_list:
+            if (user_info[1] not in unique_list):
+                unique_list.append(user_info[1])
+                full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[2], 'Alternance': False}, ignore_index=True)
+
+
+        kwargs = {
+        'plot_json' : disp_histogram_plot(full_list_df),
+        }
+    
+        return render_template('statistic_hist.html', **kwargs)
+        # return render_template('statistic.html')
+
+@app.route('/show_pie_chart')
+
+def show_pie_chart():
+        """[Allow to generate the template of statistic.html to display different statistif figures]
+
+    # Returns:
+    #     [str]: [Statistif page]
+    # """
+        full_list = Users.get_full_list()
+        full_list_df = pd.DataFrame(columns = ['Name', 'Alternance'])
+        unique_list = []
+
+        # find all the ones with alternance first
+        for user_info in full_list:
+            if (user_info[1] not in unique_list) and (user_info[4] == 'Alternance'):
+                unique_list.append(user_info[1])
+                full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[2], 'Alternance': True}, ignore_index=True)
+
+        for user_info in full_list:
+            if (user_info[1] not in unique_list):
+                unique_list.append(user_info[1])
+                full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[2], 'Alternance': False}, ignore_index=True)
+
+
+        kwargs = {
+        'plot_json' : disp_histogram_plot(full_list_df),
+        }
+    
+        return render_template('statistic_pie.html', **kwargs)
+        # return render_template('statistic.html')
 

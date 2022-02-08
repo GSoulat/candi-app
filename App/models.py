@@ -78,6 +78,13 @@ class Users(db.Model,UserMixin):
                 unique_user_without_alternance_id.append (user_info[0]) 
             
         return user_without_alternance
+    
+    @classmethod
+    def get_full_list(cls):
+
+        full_list = cls.query.join(Candidacy).with_entities(Users.id, Users.first_name,Users.last_name,Users.email_address,Candidacy.status, Candidacy.entreprise).all()
+
+        return full_list
 
     def save_to_db(self):
         db.session.add(self)
