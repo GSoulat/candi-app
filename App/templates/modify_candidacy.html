@@ -11,6 +11,12 @@
         <form method="POST" class="form-register">
             {{ form.hidden_tag() }}
 
+            {{ form.entreprise.label }}
+            {{ form.entreprise(value=candidacy.entreprise, size=32, class="form-control") }}
+            <br>
+            {{ form.ville_entreprise.label }}
+            {{ form.ville_entreprise(value=candidacy.ville_entreprise, size=32, class="form-control") }}
+            <br>
             {{ form.contact_full_name.label() }}
             {{ form.contact_full_name(value=candidacy.contact_full_name, class="form-control") }}
             <br>
@@ -24,7 +30,7 @@
             {{ form.status(value=candidacy.status, class="form-control") }}
             <br>
             {{ form.comment.label() }}
-            {{ form.comment(value=candidacy.comment, class="form-control") }}
+            {{ form.comment( class="form-control") }}
             <br>
             {{ form.date.label() }}
             {{ form.date(value=candidacy.date, class="form-control") }}

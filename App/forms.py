@@ -18,10 +18,11 @@ class AddCandidacy(FlaskForm):
     """[Form to add candidacy]
     """
     entreprise = StringField(label='Entreprise', validators=[DataRequired()])
-    contact_full_name = StringField(label='contact_full_name', validators=[DataRequired()])
-    contact_email = StringField(label='contact_email', validators=[DataRequired()])
-    contact_mobilephone = StringField(label='contact_mobilephone')
-    status = SelectField(label='Status',choices=['En cours','Rejeté','Accepté','C\'est compliqué'], validators=[DataRequired()])
+    ville_entreprise = StringField(label='Ville de l\'entreprise', validators=[DataRequired()])
+    contact_full_name = StringField(label='Nom du contact', validators=[DataRequired()])
+    contact_email = StringField(label='Email du contact', validators=[DataRequired()])
+    contact_mobilephone = StringField(label='Téléphone du contact')
+    status = SelectField(label='Statut',choices=['En cours','Rejeté','Accepté','C\'est compliqué'], validators=[DataRequired()])
     date = DateField(label='Date de la candidature',validators=[DataRequired()],format='%Y-%m-%d')
     submit = SubmitField(label='Ajouter')
 
@@ -39,11 +40,12 @@ class ModifyProfile(FlaskForm):
 class ModifyCandidacy(FlaskForm):
     """[form to modify candidacy]
     """
-    contact_full_name = StringField(label='contact_full_name', validators=[DataRequired()])
-    contact_email = StringField(label='contact_email', validators=[DataRequired()])
-    contact_mobilephone = StringField(label='contact_mobilephone')
-    status = SelectField(label='Status',choices=['En cours','Rejeté','Accepté','C\'est compliqué'], validators=[DataRequired()])
+    entreprise = StringField(label='Entreprise', validators=[DataRequired()])
+    ville_entreprise = StringField(label='Ville de l\'entreprise', validators=[DataRequired()])
+    contact_full_name = StringField(label='Nom du contact', validators=[DataRequired()])
+    contact_email = StringField(label='Email du contact', validators=[DataRequired()])
+    contact_mobilephone = StringField(label='Téléphone du contact')
+    status = SelectField(label='Statut',choices=['En cours','Rejeté','Accepté','C\'est compliqué'], validators=[DataRequired()])
     comment = TextAreaField(label='Commentaire')
     date = DateField(label='Date de la candidature',validators=[DataRequired()],format='%Y-%m-%d')
-
     submit = SubmitField(label="Valider")
