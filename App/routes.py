@@ -1,8 +1,9 @@
+from collections import UserString
 from flask import render_template, redirect, url_for, flash, request
 from App import db, app
 from datetime import date
 from .models import Users, Candidacy
-from .forms import Login, AddCandidacy, ModifyCandidacy, ModifyProfile
+from .forms import Login, AddCandidacy, ModifyCandidacy, ModifyPassword, ModifyProfile
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -35,8 +36,6 @@ def login_page():
     return render_template('login.html',form=form)
 
 
-
-
 @app.route('/board', methods=['GET','POST'])
 @login_required
 def board_page():
@@ -48,12 +47,40 @@ def board_page():
     admin_candidacy_attributs = ["user_fisrt_name",'entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status']
     usercandidacy_attributs = ['entreprise', 'ville entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status','comment']
 
-
     if (current_user.is_admin == True):  
         return render_template('board.html', lenght = len(admin_candidacy_attributs), title = admin_candidacy_attributs, user_candidacy=Candidacy.get_all_in_list_with_user_name())
     else:
         return render_template('board.html', lenght = len(usercandidacy_attributs), title = usercandidacy_attributs ,user_candidacy=Candidacy.find_by_user_id(current_user.id))
 
+@app.route('/profile/')
+@login_required
+def profile_page():
+
+    return render_template('profile.html')
+
+@app.route('/modify_profile/', methods=['GET', 'POST'])
+@login_required
+def modify_profile_page():
+    form = ModifyProfile()
+
+    if form.validate_on_submit():
+        current_user.last_name = form.last_name.data
+        current_user.first_name = form.first_name.data
+        current_user.email_address = form.email_address.data
+        current_user.telephone_number = form.telephone_number.data
+        
+        db.session.add(current_user)
+        db.session.commit()
+        flash(f"Votre profil a été modifié avec succès.",category="success")
+
+        return redirect(url_for('profile_page'))
+    
+    return render_template('modify_profile.html', form=form, current_user=current_user)
+
+@app.route('/stat')
+@login_required
+def stat_page():
+    return render_template('stat.html')
 
 @app.route('/logout')
 def logout_page():
@@ -77,15 +104,15 @@ def add_candidature():
         return redirect(url_for('board_page'))
     return render_template('add_candidacy.html', form=form)
 
-@app.route('/modify_profile', methods=['GET', 'POST'])
+@app.route('/modify_password', methods=['GET', 'POST'])
 @login_required
-def modify_profile():
-    """[Allow to generate the template of modify_profile.html on modify_profile path to modify profile in the BDD if validate and redirect to the board page when finish]
+def modify_password():
+    """[Allow to generate the template of modify_password.html on modify_password path to modify password in the BDD if validate and redirect to the board page when finish]
 
     Returns:
-        [str]: [modify profile code page]
+        [str]: [modify password code page]
     """
-    form = ModifyProfile()
+    form = ModifyPassword()
     if form.validate_on_submit():
         if current_user.email_address == form.email.data and check_password_hash(current_user.password_hash, form.current_password.data):
             current_user.password_hash = generate_password_hash(form.new_password.data, method='sha256')
@@ -96,7 +123,7 @@ def modify_profile():
             return redirect(url_for('board_page'))
         else:
             flash('Adresse email ou mot de passe invalide',category="danger")
-    return render_template('modify_profile.html',form=form)
+    return render_template('modify_password.html',form=form)
 
 @app.route('/modify_candidacy', methods=['GET', 'POST'])
 @login_required
@@ -130,11 +157,24 @@ def modify_candidacy():
     form.comment.data = candidacy.comment
     return render_template('modify_candidacy.html', form=form , candidacy=candidacy.json())
     
-@app.route('/delete_candidacy')
+@app.route('/delete_candidacy', methods=['GET', 'POST'])
 def delete_candidacy():
     """[Allow to delete candidacy in the BDD with the id and redirect to board page]"""
 
     candidacy_id = request.args.get('id')
     Candidacy.query.filter_by(id=candidacy_id).first().delete_from_db()
     flash("Candidature supprimé avec succés",category="success")
-    return redirect(url_for('board_page'))
+    return redirect(url_for('board_filtre_page'))
+
+
+@app.route('/boardfiltre', methods=['GET','POST'])
+@login_required
+def board_filtre_page():
+    """[Allow to generate the template of board.html on board path, if user is authenticated else return on login]
+
+    Returns:
+        [str]: [board page code different if the user is admin or not]
+    """
+    users = Users.find_all_isAdmin()
+
+    return render_template('board_filtre.html', users=users,  title='toto', content='coco')
