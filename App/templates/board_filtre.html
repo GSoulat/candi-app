@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
+<link
+	href="//netdna.bootstrapcdn.com/bootstrap/5.0.0/css/bootstrap.min.css"
+	rel="stylesheet" id="bootstrap-css">
+
+{% endblock %}
+
+{% block content %}
+
+<section class="container card shadow-lg rounded mt-3">
+  <div>
+    <h1 class="d-flex justify-content-center">Liste des étudiants</h1>
+  </div>
+  <!-- <div class="d-flex row">
+    <select class="form-select form-select-lg m-3" aria-label="Default select example">
+      <option selected>En Alternance ?</option>
+      <option value="1">En Alternance</option>
+      <option value="2">En Recherche</option>
+    </select>
+
+    <select class="form-select form-select-lg m-3" aria-label="Default select example">
+      <option selected>Quel promo ?</option>
+      <option value="1">Dev IA 1</option>
+      <option value="2">Dev IA 2</option>
+    </select>
+
+    <select class="form-select form-select-lg m-3" aria-label="Default select example">
+      <option selected>Quel site ?</option>
+      <option value="1">FlagShip</option>
+      <option value="2">Autre</option>
+    </select>
+
+    <button type="button" class="btn btn-primary">Filtrer </button> -->
+  </div>
+    <div class="col-12">
+      <div class="d-flex flex-wrap justify-content-center">
+        {% for user in users%}
+        <div class="card shadow-sm col-2 m-2">
+          <svg class="bd-placeholders-img card-img-top mt-3" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect></svg>
+          <div class="card-body">
+            <p class="card-text badge badge-primary">Prénom nom</p>
+            <p class="card-text badge badge-secondary">Promo</p>
+            <p class="card-text badge badge-info">Alternance</p>
+            <div class="d-flex justify-content-start">
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-success">Ouvrir la fiche</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+</section>
+<script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
+{% endblock %}

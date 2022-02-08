@@ -1,3 +1,4 @@
+from collections import UserString
 from flask import render_template, redirect, url_for, flash, request
 from App import db, app
 from datetime import date
@@ -33,8 +34,6 @@ def login_page():
         else:
             flash('Adresse email ou mot de passe invalide',category="danger")
     return render_template('login.html',form=form)
-
-
 
 
 @app.route('/board', methods=['GET','POST'])
@@ -125,11 +124,24 @@ def modify_candidacy():
             flash('Something goes wrong',category="danger")
     return render_template('modify_candidacy.html', form=form , candidacy=candidacy.json())
     
-@app.route('/delete_candidacy')
+@app.route('/delete_candidacy', methods=['GET', 'POST'])
 def delete_candidacy():
     """[Allow to delete candidacy in the BDD with the id and redirect to board page]"""
 
     candidacy_id = request.args.get('id')
     Candidacy.query.filter_by(id=candidacy_id).first().delete_from_db()
     flash("Candidature supprimé avec succés",category="success")
-    return redirect(url_for('board_page'))
+    return redirect(url_for('board_filtre_page'))
+
+
+@app.route('/boardfiltre', methods=['GET','POST'])
+@login_required
+def board_filtre_page():
+    """[Allow to generate the template of board.html on board path, if user is authenticated else return on login]
+
+    Returns:
+        [str]: [board page code different if the user is admin or not]
+    """
+    users = Users.find_all_isAdmin()
+
+    return render_template('board_filtre.html', users=users,  title='toto', content='coco')
