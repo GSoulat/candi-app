@@ -7,29 +7,23 @@ Board
 {% block content %}
 <section>
   <h1>Candidatures</h1>
-  <div class="tbl-header">
-    <table cellpadding="0" cellspacing="0" border="0">
+    <table cellpadding="0" cellspacing="0" border="0" class="table" data-toggle="table" data-search="true">
       <thead>
         <tr>
           {% for col_name in title %}
-          <th style="text-align:left">{{ col_name }}</th>
-
+          <th style="text-align:left" data-sortable="true">{{ col_name }}</th>
           {% endfor %}
           {% if current_user.is_admin == False %}
           <th style="text-align:left"> action  </th>
           {% endif %}
         </tr>
       </thead>
-    </table>
-  </div>
-  <div class="tbl-content">
-    <table cellpadding="0" cellspacing="0" border="0">
       <tbody>
         {% for candidacy in user_candidacy%}
         <tr>
           {% for info in candidacy.keys()%}
             {% if info not in ['id','user_id'] %}
-              <td>{{ candidacy[info] }}</td>
+              <td data-sortable="true">{{ candidacy[info] }}</td>
             {% endif %}
           {% endfor %}
           {% if current_user.is_admin == False %}
@@ -52,13 +46,12 @@ Board
         {% endfor %}
       </tbody>
     </table>
-  </div>
   {% if current_user.is_admin == False %}
-  <div>
+    <div>
       <button class="btn btn-lg btn-primary mt-4 d-block" id="button">
         <a href="{{ url_for('add_candidature') }}">Ajouter candidature</a>
       </button>
-  </div>
+    </div>
   {% endif %}
 </section>
 {% endblock %}

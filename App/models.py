@@ -35,6 +35,7 @@ class Users(db.Model,UserMixin):
     #street_number = db.Column(db.Integer(), nullable=True)
     is_admin = db.Column(db.Boolean(), nullable=False, default=False)
 
+
     def __repr__(self):
         return f'{self.last_name} {self.first_name}'
 
@@ -50,6 +51,14 @@ class Users(db.Model,UserMixin):
     @classmethod
     def find_by_title(cls, user_id):
         return cls.query.filter_by(user_id=user_id).first()
+    
+    @classmethod
+    def find_by_id(cls, id):
+        return cls.query.filter_by(id=id).first()
+    
+    @classmethod
+    def find_all_isAdmin(cls):
+        return cls.query.filter_by(is_admin = True).all()
 
 
     def save_to_db(self):
@@ -70,12 +79,14 @@ class Candidacy(db.Model):
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'),nullable=False)
-    entreprise = db.Column(db.String(), nullable=False)
+    entreprise = db.Column(db.String(), nullable=True)
+    ville_entreprise = db.Column(db.String(), nullable=True)
     contact_full_name = db.Column(db.String(length=50), nullable=False)
     contact_email = db.Column(db.String(length=50), nullable=True)
     contact_mobilephone = db.Column(db.String(length=50), nullable=True)
-    date = db.Column(db.String(), default=datetime.date.today())
+    date = db.Column(db.String(), nullable=True, default= datetime.date.today())
     status = db.Column(db.String(), nullable=True, default="En cours")
+    comment = db.Column(db.String(),nullable=True)
 
     def __repr__(self):
         return f' Candidat id : {self.user_id}'
@@ -85,11 +96,13 @@ class Candidacy(db.Model):
             'id': self.id, 
             'user_id': self.user_id, 
             'entreprise': self.entreprise,
+            'ville_entreprise': self.ville_entreprise,
             'contact_full_name': self.contact_full_name,
             'contact_email': self.contact_email,
             'contact_mobilephone': self.contact_mobilephone,
             'date': self.date,
-            'status': self.status
+            'status': self.status,
+            'comment': self.comment
             }
 
 
@@ -103,7 +116,7 @@ class Candidacy(db.Model):
     @classmethod
     def get_all_in_list_with_user_name(cls):
         candidacy_list=[]
-        for candidacy in cls.query.join(Users).with_entities(Users.first_name,cls.entreprise, cls.contact_full_name, cls.contact_email, cls.contact_mobilephone,cls.date,cls.status).all():
+        for candidacy in cls.query.join(Users).with_entities(Users.first_name, cls.id ,cls.entreprise, cls.contact_full_name, cls.contact_email, cls.contact_mobilephone,cls.date,cls.status).all():
             candidacy_list.append(candidacy)
         return candidacy_list
 
@@ -114,6 +127,30 @@ class Candidacy(db.Model):
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
+        
+        
+class Fonction(db.Model):
+    """Create a table fonction on to create a job like student, employee
+
+    Args:
+        db.Model: Generates columns for the table
+
+    """
+    id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
+    fonction = db.Column(db.String(), nullable=False)
+
+
+    def __repr__(self):
+        return f' Fonction : {self.fonction}'
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
 
 # Function to create db and populate it
 def init_db():
@@ -125,7 +162,7 @@ def init_db():
     # Candidacy(user_id = 1, entreprise = "facebook", contact_full_name = "mz", contact_email="mz@facebook.fb").save_to_db()
     # Candidacy(user_id = 1, entreprise = "google", contact_full_name = "lp", contact_email="lp@gmail.com").save_to_db()
 
-    
+    lg.warning('Ouverture du fichier CSV liste_apprenants')
     # Insert all users from  "static/liste_apprenants.csv"
     with open("App/static/liste_apprenants.csv", newline='') as f:
         reader = csv.reader(f)
@@ -141,5 +178,37 @@ def init_db():
                 'is_admin' : True if i[4] == "TRUE" else False
             }
         Users(**user).save_to_db()
+                
+        
+    lg.warning('Ouverture du fichier CSV Candidacy')    
+    with open("App/static/candidacy.csv", newline='') as fileCandi:
+        readerCandi = csv.reader(fileCandi)
+        dataCandi = list(readerCandi)
+
+    lg.warning('Debut enregistrement Candidacy')
+    for i in dataCandi:
+        candidacy = {
+                    'user_id' : i[0],
+                    'entreprise' : i[1],
+                    'contact_full_name' : i[2],
+                    'contact_email' : i[3],
+                    'contact_mobilephone' : i[4],
+                    'date' : i[5],
+                    'status' : i[6]
+                    }
+        Candidacy(**candidacy).save_to_db()
+        
+        
+    lg.warning('Ouverture du fichier CSV fonction')    
+    with open("App/static/fonction.csv", newline='') as filefonction:
+        reader = csv.reader(filefonction)
+        data = list(reader)
+        print(data)
+
+    lg.warning('Debut enregistrement fonction')
+    for i in data:
+        Fonction(fonction = i[0]).save_to_db()    
+        
+  
     
     lg.warning('Database initialized!')

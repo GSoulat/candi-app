@@ -1,3 +1,4 @@
+from collections import UserString
 from flask import render_template, redirect, url_for, flash, request
 from App import db, app
 from datetime import date
@@ -35,8 +36,6 @@ def login_page():
     return render_template('login.html',form=form)
 
 
-
-
 @app.route('/board', methods=['GET','POST'])
 @login_required
 def board_page():
@@ -46,8 +45,7 @@ def board_page():
         [str]: [board page code different if the user is admin or not]
     """
     admin_candidacy_attributs = ["user_fisrt_name",'entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status']
-    usercandidacy_attributs = ['entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status']
-
+    usercandidacy_attributs = ['entreprise', 'ville entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status','comment']
 
     if (current_user.is_admin == True):  
         return render_template('board.html', lenght = len(admin_candidacy_attributs), title = admin_candidacy_attributs, user_candidacy=Candidacy.get_all_in_list_with_user_name())
@@ -80,6 +78,11 @@ def modify_profile_page():
     
     return render_template('modify_profile.html', form=form, current_user=current_user)
 
+@app.route('/stat')
+@login_required
+def stat_page():
+    return render_template('stat.html')
+
 @app.route('/logout')
 def logout_page():
     """[Allows to disconnect the user and redirect to the home page]
@@ -97,7 +100,7 @@ def add_candidature():
     """
     form = AddCandidacy()
     if form.validate_on_submit():
-        Candidacy(user_id = current_user.id, entreprise = form.entreprise.data, contact_full_name = form.contact_full_name.data, contact_email = form.contact_email.data, contact_mobilephone = form.contact_mobilephone.data).save_to_db()
+        Candidacy(user_id = current_user.id, status = form.status.data, entreprise = form.entreprise.data, ville_entreprise = form.ville_entreprise.data, contact_full_name = form.contact_full_name.data, contact_email = form.contact_email.data, contact_mobilephone = form.contact_mobilephone.data, date =form.date.data).save_to_db()
         flash('Nouvelle Candidature ajouté ', category='success')
         return redirect(url_for('board_page'))
     return render_template('add_candidacy.html', form=form)
@@ -134,27 +137,45 @@ def modify_candidacy():
     form = ModifyCandidacy()
     candidacy_id = request.args.get('id')
     candidacy = Candidacy.query.filter_by(id = candidacy_id).first()
-
+    print(candidacy.json())
     if form.validate_on_submit():
         
         if candidacy:
+            candidacy.entreprise = form.entreprise.data
+            candidacy.ville_entreprise = form.ville_entreprise.data
             candidacy.contact_full_name = form.contact_full_name.data
             candidacy.contact_email = form.contact_email.data
             candidacy.contact_mobilephone = form.contact_mobilephone.data
             candidacy.status = form.status.data
+            candidacy.date =form.date.data
+            candidacy.comment = form.comment.data
             db.session.commit()
 
             flash(f"La candidature a bien été modifié",category="success")
             return redirect(url_for('board_page'))
         else:
             flash('Something goes wrong',category="danger")
+    form.comment.data = candidacy.comment
     return render_template('modify_candidacy.html', form=form , candidacy=candidacy.json())
     
-@app.route('/delete_candidacy')
+@app.route('/delete_candidacy', methods=['GET', 'POST'])
 def delete_candidacy():
     """[Allow to delete candidacy in the BDD with the id and redirect to board page]"""
 
     candidacy_id = request.args.get('id')
     Candidacy.query.filter_by(id=candidacy_id).first().delete_from_db()
     flash("Candidature supprimé avec succés",category="success")
-    return redirect(url_for('board_page'))
+    return redirect(url_for('board_filtre_page'))
+
+
+@app.route('/boardfiltre', methods=['GET','POST'])
+@login_required
+def board_filtre_page():
+    """[Allow to generate the template of board.html on board path, if user is authenticated else return on login]
+
+    Returns:
+        [str]: [board page code different if the user is admin or not]
+    """
+    users = Users.find_all_isAdmin()
+
+    return render_template('board_filtre.html', users=users,  title='toto', content='coco')
