@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Profil
+{% endblock %}
+{% block content %}
+<h1>Your profile</h1>
+{{ current_user.last_name }}
+<br/>
+{{ current_user.first_name }}
+<br/>
+{{ current_user.email_address }}
+<br/>
+{{ current_user.telephone_number }}
+<br/>
+{% if current_user.is_admin %}
+    Connecté en tant qu'administrateur
+{% else %}
+    Connecté en tant qu'utilisateur
+{% endif %}
+<br/>
+<a href="{{ url_for('modify_profile_page') }}" class="btn btn-info" role="button">Modify profile</a>
+{% endblock %}
