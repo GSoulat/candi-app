@@ -168,7 +168,7 @@ def disp_histogram_plot(df_to_disp):
 
 
     fig = make_subplots(rows=1, cols=2)
-    fig = px.histogram(df_to_disp, x='Alternance', title = 'Apprenants avec / sans Alternance (using Plotly)')
+    fig = px.histogram(df_to_disp, x='Alternance', title = 'Apprenants avec / sans Alternance')
 
     # fig.add_trace(
     #         go.histogram(df_to_disp, x='Alternance', title = 'Apprenants avec / sans Alternance (using Plotly)'),
@@ -183,7 +183,7 @@ def disp_histogram_plot(df_to_disp):
     
     # fig.update_layout(title_text="Side By Side Subplots")
     fig.update_layout(height=600, width=800, title_text="Side By Side Subplots")
-        # fig.show()
+     # fig.show()
 
     plot_json = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
@@ -217,7 +217,29 @@ def show_histogram():
         }
     
         return render_template('statistic_hist.html', **kwargs)
-        # return render_template('statistic.html')
+
+def disp_pie_plot(df_to_disp):
+    
+    fig = px.pie(df_to_disp, values='Apprenants', names='Status', title = 'Apprenants avec / sans Alternance')
+
+    # fig.add_trace(
+    #         go.histogram(df_to_disp, x='Alternance', title = 'Apprenants avec / sans Alternance (using Plotly)'),
+    #         row=1, col=1
+    #     )
+
+    # fig.add_trace(
+    #         go.Scatter(x=[20, 30, 40], y=[50, 60, 70]),
+    #         row=1, col=2
+    #     )
+
+    
+    # fig.update_layout(title_text="Side By Side Subplots")
+    fig.update_layout(height=600, width=800, title_text="Side By Side Subplots")
+        # fig.show()
+
+    plot_json = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return plot_json
 
 @app.route('/show_pie_chart')
 
@@ -227,6 +249,7 @@ def show_pie_chart():
     # Returns:
     #     [str]: [Statistif page]
     # """
+
         full_list = Users.get_full_list()
         full_list_df = pd.DataFrame(columns = ['Name', 'Alternance'])
         unique_list = []
@@ -237,14 +260,19 @@ def show_pie_chart():
                 unique_list.append(user_info[1])
                 full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[2], 'Alternance': True}, ignore_index=True)
 
+        apprenant_with_alternance = len(unique_list)
+
         for user_info in full_list:
             if (user_info[1] not in unique_list):
                 unique_list.append(user_info[1])
                 full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[2], 'Alternance': False}, ignore_index=True)
 
+        pie_df = pd.DataFrame(columns = ['Status', 'Apprenants'])
+        pie_df['Status'] = ['avec alternance', 'sans alternance']
+        pie_df['Apprenants'] = [apprenant_with_alternance, (len(unique_list) - apprenant_with_alternance)]
 
         kwargs = {
-        'plot_json' : disp_histogram_plot(full_list_df),
+        'plot_json' : disp_pie_plot(pie_df),
         }
     
         return render_template('statistic_pie.html', **kwargs)
