@@ -120,7 +120,7 @@ class Candidacy(db.Model):
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'),nullable=False)
     entreprise = db.Column(db.String(), nullable=False)
-    ville_entreprise = db.Column(db.String(), nullable=False)
+    ville_entreprise = db.Column(db.String(), nullable=True)
     contact_full_name = db.Column(db.String(length=50), nullable=False)
     contact_email = db.Column(db.String(length=50), nullable=True)
     contact_mobilephone = db.Column(db.String(length=50), nullable=True)
