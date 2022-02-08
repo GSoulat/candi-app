@@ -159,16 +159,13 @@ def show_list_without_alternance():
     # Returns:
     #     [str]: [List without alternance page]
     # """
-        attributs = ["user_fisrt_name","user_last_name",'contact_email']
+        attributs = ["user_fisrt_name","user_last_name",'contact_email', 'action']
+
+        # add action to view progress
         return render_template('list_without_alternance.html', lenght = len(attributs), title = attributs, user_candidacy=Users.get_list_without_alternance())
 
 def disp_histogram_plot(df_to_disp):
     
-    # 
-    fig = go.Figure()
-
-    fig = make_subplots(rows=1, cols=2)
-
     fig = px.histogram(df_to_disp, x='Alternance', title = 'Apprenants avec / sans Alternance')
 
     fig.update_layout(height=400, width=400)
@@ -179,10 +176,10 @@ def disp_histogram_plot(df_to_disp):
 
 @app.route('/show_histogram')
 def show_histogram():
-        """[Allow to generate the template of statistic.html to display different statistif figures]
+        """[Allow to generate the template of statistic_hist.html to display histogram of the status of the apprenants]
 
     # Returns:
-    #     [str]: [Statistif page]
+    #     [str]: [Show histogram page]
     # """
         full_list = Users.get_full_list()
         full_list_df = pd.DataFrame(columns = ['Name', 'Alternance'])
@@ -194,6 +191,7 @@ def show_histogram():
                 unique_list.append(user_info[1])
                 full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[2], 'Alternance': True}, ignore_index=True)
 
+        # find all the ones without alternance
         for user_info in full_list:
             if (user_info[1] not in unique_list):
                 unique_list.append(user_info[1])
@@ -219,10 +217,10 @@ def disp_pie_plot(df_to_disp):
 @app.route('/show_pie_chart')
 
 def show_pie_chart():
-        """[Allow to generate the template of statistic.html to display different statistif figures]
+        """[Allow to generate the template of statistic_pie.html to display different statistif figures]
 
     # Returns:
-    #     [str]: [Statistif page]
+    #     [str]: [Show pie chart page]
     # """
 
         full_list = Users.get_full_list()
@@ -251,5 +249,24 @@ def show_pie_chart():
         }
     
         return render_template('statistic_pie.html', **kwargs)
-        # return render_template('statistic.html')
 
+
+@app.route('/user_board', methods=['GET','POST'])
+@login_required
+def user_board_page():
+    """[Allow to generate the template of board.html on board path, if user is authenticated else return on login]
+
+    Returns:
+        [str]: [board page code different if the user is admin or not]
+    """
+
+    id = request.args.get('id')
+    user_name = Users.find_by_user_id(id)
+
+    user_name =user_name[0]['first_name'] + ' ' + user_name[0]['last_name']
+    # display_name = str(user_name['first_name'] +' '+ user_name['last_name'])
+ 
+    # print(display_name.first_name)
+    usercandidacy_attributs = ['entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status']
+
+    return render_template('user_board.html', lenght = len(usercandidacy_attributs), user_name =user_name, title = usercandidacy_attributs ,user_candidacy=Candidacy.find_by_user_id(id))

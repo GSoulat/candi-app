@@ -1,13 +1,12 @@
 {% extends "base.html" %}
 
 {% block title %}
-    
+Board
 {% endblock %}
 
 {% block content %}
 <section>
-  <h1>Analyses statistiques des alternance d'apprenants</h1>
-  <h2>La liste d'apprenants sans alternance</h2>
+  <h1>Progress of {{user_name}}</h1>
 
   <div class="container">
     <button type="button" class="btn btn-primary"><a href="{{ url_for('show_list_without_alternance') }}">Aprenants sans alternance</a></button>
@@ -16,19 +15,17 @@
     <button type="button" class="btn btn-primary"><a href="{{ url_for('show_pie_chart') }}">Pie Chart</a></button>  
   </div>
 
+
   <div class="tbl-header">
     <table cellpadding="0" cellspacing="0" border="0">
       <thead>
         <tr>
           {% for col_name in title %}
           <th style="text-align:left">{{ col_name }}</th>
-          
-          {% endfor %}
-          
+
+          {% endfor %}  
         </tr>
-        
       </thead>
-      
     </table>
   </div>
   <div class="tbl-content">
@@ -37,16 +34,14 @@
         {% for candidacy in user_candidacy%}
         <tr>
           {% for info in candidacy.keys()%}
-            {% if info not in ['id','user_id', 'status', 'entreprise'] %}
+            {% if info not in ['id','user_id'] %}
               <td>{{ candidacy[info] }}</td>
             {% endif %}
           {% endfor %}
-          <td><button type="button" class="btn btn-primary"><a href="{{ url_for('user_board_page', id = candidacy['id']) }}">View Progress</a></button></td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </section>
-
-
 {% endblock %}

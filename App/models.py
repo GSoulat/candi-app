@@ -49,6 +49,12 @@ class Users(db.Model,UserMixin):
     def find_by_title(cls, user_id):
         return cls.query.filter_by(user_id=user_id).first()
 
+    @classmethod
+    def find_by_user_id(cls, user_id):
+        user_info=[]
+        for info in cls.query.filter_by(id=user_id).all():
+            user_info.append(info.json())
+        return user_info
 
     @classmethod
     def get_list_with_alternance(cls):
