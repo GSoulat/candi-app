@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request
 from App import db, app
 from datetime import date
 from .models import Users, Candidacy
-from .forms import Login, AddCandidacy, ModifyCandidacy, ModifyPassword
+from .forms import Login, AddCandidacy, ModifyCandidacy, ModifyPassword, ModifyProfile
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -60,11 +60,24 @@ def profile_page():
 
     return render_template('profile.html')
 
-@app.route('/modify_profile/')
+@app.route('/modify_profile/', methods=['GET', 'POST'])
 @login_required
 def modify_profile_page():
+    form = ModifyProfile()
 
-    return render_template('modify_profile.html')
+    if form.validate_on_submit():
+        current_user.last_name = form.last_name.data
+        current_user.first_name = form.first_name.data
+        current_user.email_address = form.email_address.data
+        current_user.telephone_number = form.telephone_number.data
+        
+        db.session.add(current_user)
+        db.session.commit()
+        flash(f"Votre profil a été modifié avec succès.",category="success")
+
+        return redirect(url_for('profile_page'))
+    
+    return render_template('modify_profile.html', form=form, current_user=current_user)
 
 @app.route('/logout')
 def logout_page():
