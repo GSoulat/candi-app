@@ -35,8 +35,6 @@ def login_page():
     return render_template('login.html',form=form)
 
 
-
-
 @app.route('/board', methods=['GET','POST'])
 @login_required
 def board_page():
@@ -47,7 +45,6 @@ def board_page():
     """
     admin_candidacy_attributs = ["user_fisrt_name",'entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status']
     usercandidacy_attributs = ['entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status']
-
 
     if (current_user.is_admin == True):  
         return render_template('board.html', lenght = len(admin_candidacy_attributs), title = admin_candidacy_attributs, user_candidacy=Candidacy.get_all_in_list_with_user_name())
@@ -78,6 +75,11 @@ def modify_profile_page():
         return redirect(url_for('profile_page'))
     
     return render_template('modify_profile.html', form=form, current_user=current_user)
+
+@app.route('/stat')
+@login_required
+def stat_page():
+    return render_template('stat.html')
 
 @app.route('/logout')
 def logout_page():
