@@ -58,6 +58,48 @@ class Users(db.Model,UserMixin):
     def find_all_isAdmin(cls):
         return cls.query.filter_by(is_admin = True).all()
 
+    @classmethod
+    def find_by_user_id(cls, user_id):
+        user_info=[]
+        for info in cls.query.filter_by(id=user_id).all():
+            user_info.append(info.json())
+        return user_info
+
+    @classmethod
+    def get_list_with_alternance(cls):
+        user_list=[]
+        for user_info in cls.query.join(Candidacy).with_entities(Users.first_name,Users.last_name,Users.email_address,Candidacy.status, Candidacy.entreprise).all():
+
+            if user_info[3] == 'Alternance':
+                user_list.append(user_info)
+            
+        return user_list
+
+    @classmethod
+    def get_list_without_alternance(cls):
+
+        alternance_list = cls.query.join(Candidacy).with_entities(Users.id, Users.first_name,Users.last_name,Users.email_address,Candidacy.status, Candidacy.entreprise).all()
+        user_with_alternance_id=[]
+        unique_user_without_alternance_id = []
+        user_without_alternance=[]
+
+        for user_info in alternance_list:
+            if user_info[4] == 'Alternance':
+                user_with_alternance_id.append (user_info[0])
+        print (user_with_alternance_id)
+        for user_info in alternance_list:
+            if (user_info[0] not in user_with_alternance_id) and (user_info[0] not in unique_user_without_alternance_id):
+                user_without_alternance.append(user_info)
+                unique_user_without_alternance_id.append (user_info[0]) 
+            
+        return user_without_alternance
+    
+    @classmethod
+    def get_full_list(cls):
+
+        full_list = cls.query.join(Candidacy).with_entities(Users.id, Users.first_name,Users.last_name,Users.email_address,Candidacy.status, Candidacy.entreprise).all()
+
+        return full_list
 
     def save_to_db(self):
         db.session.add(self)
@@ -101,6 +143,14 @@ class Candidacy(db.Model):
             'date': self.date,
             'status': self.status,
             'comment': self.comment
+            }
+    def json_test(self):
+        return {
+
+            'entreprise': self.entreprise,
+            'contact_full_name': self.contact_full_name,
+            'contact_email': self.contact_email,
+            'status': self.status
             }
 
 
@@ -155,12 +205,14 @@ def init_db():
     db.drop_all()
     db.create_all()
     #db.session.add( )
+
     Users(last_name="ben", first_name= "charles", email_address= "cb@gmail.com", password_hash= generate_password_hash("1234", method='sha256'), is_admin=True).save_to_db() 
     Users(last_name="beniac", first_name= "cha", email_address= "bb@gmail.com", password_hash= generate_password_hash("1234", method='sha256'), is_admin=False).save_to_db()
     #Candidacy(user_id = 1, entreprise = "facebook", contact_full_name = "mz", contact_email="mz@facebook.fb").save_to_db()
     #Candidacy(user_id = 1, entreprise = "google", contact_full_name = "lp", contact_email="lp@gmail.com").save_to_db()
 
     lg.warning('Ouverture du fichier CSV liste_apprenants')
+
     # Insert all users from  "static/liste_apprenants.csv"
     with open("App/static/liste_apprenants.csv", newline='') as f:
         reader = csv.reader(f)

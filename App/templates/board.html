@@ -51,7 +51,13 @@ Board
       <button class="btn btn-lg btn-primary mt-4 d-block" id="button">
         <a href="{{ url_for('add_candidature') }}">Ajouter candidature</a>
       </button>
-    </div>
+  </div>
+  {% else %}
+  <div>
+    <button class="btn btn-lg btn-primary mt-4 d-block" id="button">
+      <a href="{{ url_for('show_list_without_alternance') }}">Analyses statistiques</a>
+    </button>
+</div>
   {% endif %}
 </section>
 {% endblock %}
