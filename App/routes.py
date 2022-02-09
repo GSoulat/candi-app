@@ -206,6 +206,38 @@ def disp_histogram_plot(df_to_disp):
 
     return plot_json
 
+# @app.route('/show_histogram')
+# def show_histogram():
+#         """[Allow to generate the template of statistic_hist.html to display histogram of the status of the apprenants]
+
+#     # Returns:
+#     #     [str]: [Show histogram page]
+#     # """
+#         full_list = Users.get_full_list()
+#         full_list_df = pd.DataFrame(columns = ['Name', 'Alternance'])
+#         unique_list = []
+
+#         print (full_list)
+
+#         # find all the ones with alternance first
+#         for user_info in full_list:
+#             if (user_info[1] not in unique_list) and (user_info[4] == 'Alternance'):
+#                 unique_list.append(user_info[1])
+#                 full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[2], 'Alternance': True}, ignore_index=True)
+
+#         # find all the ones without alternance
+#         for user_info in full_list:
+#             if (user_info[1] not in unique_list):
+#                 unique_list.append(user_info[1])
+#                 full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[2], 'Alternance': False}, ignore_index=True)
+
+
+#         kwargs = {
+#         'plot_json' : disp_histogram_plot(full_list_df),
+#         }
+    
+#         return render_template('statistic_hist.html', **kwargs)
+
 @app.route('/show_histogram')
 def show_histogram():
         """[Allow to generate the template of statistic_hist.html to display histogram of the status of the apprenants]
@@ -213,22 +245,17 @@ def show_histogram():
     # Returns:
     #     [str]: [Show histogram page]
     # """
-        full_list = Users.get_full_list()
+
+        list_no_alternance= Users.get_list_without_alternance()
+        list_with_alternance = Users.get_list_with_alternance()
+
         full_list_df = pd.DataFrame(columns = ['Name', 'Alternance'])
-        unique_list = []
 
-        # find all the ones with alternance first
-        for user_info in full_list:
-            if (user_info[1] not in unique_list) and (user_info[4] == 'Alternance'):
-                unique_list.append(user_info[1])
-                full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[2], 'Alternance': True}, ignore_index=True)
+        for user_info in list_with_alternance:
+            full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[0], 'Alternance': True}, ignore_index=True)
 
-        # find all the ones without alternance
-        for user_info in full_list:
-            if (user_info[1] not in unique_list):
-                unique_list.append(user_info[1])
-                full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[2], 'Alternance': False}, ignore_index=True)
-
+        for user_info in list_no_alternance:
+            full_list_df = full_list_df.append({'Name': user_info['first_name']+' '+ user_info['last_name'], 'Alternance': False}, ignore_index=True)
 
         kwargs = {
         'plot_json' : disp_histogram_plot(full_list_df),
