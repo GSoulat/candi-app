@@ -250,26 +250,20 @@ def show_pie_chart():
     #     [str]: [Show pie chart page]
     # """
 
-        full_list = Users.get_full_list()
+        list_no_alternance= Users.get_list_without_alternance()
+        list_with_alternance = Users.get_list_with_alternance()
+
         full_list_df = pd.DataFrame(columns = ['Name', 'Alternance'])
-        unique_list = []
 
-        # find all the ones with alternance first
-        for user_info in full_list:
-            if (user_info[1] not in unique_list) and (user_info[4] == 'Alternance'):
-                unique_list.append(user_info[1])
-                full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[2], 'Alternance': True}, ignore_index=True)
+        for user_info in list_with_alternance:
+            full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[0], 'Alternance': True}, ignore_index=True)
 
-        apprenant_with_alternance = len(unique_list)
-
-        for user_info in full_list:
-            if (user_info[1] not in unique_list):
-                unique_list.append(user_info[1])
-                full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[2], 'Alternance': False}, ignore_index=True)
+        for user_info in list_no_alternance:
+            full_list_df = full_list_df.append({'Name': user_info['first_name']+' '+ user_info['last_name'], 'Alternance': False}, ignore_index=True)
 
         pie_df = pd.DataFrame(columns = ['Status', 'Apprenants'])
         pie_df['Status'] = ['avec alternance', 'sans alternance']
-        pie_df['Apprenants'] = [apprenant_with_alternance, (len(unique_list) - apprenant_with_alternance)]
+        pie_df['Apprenants'] = [len(full_list_df.loc[full_list_df['Alternance'] ==True]), len(full_list_df.loc[full_list_df['Alternance'] ==False])]
 
         kwargs = {
         'plot_json' : disp_pie_plot(pie_df),
