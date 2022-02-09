@@ -4,7 +4,6 @@ __pycache__/
 *$py.class
 app.db
 destest.py
-myEnv/*
 myFlask/*
 # C extensions
 *.so
