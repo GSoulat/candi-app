@@ -195,16 +195,7 @@ def show_list_without_alternance():
         attributs = ["user_fisrt_name","user_last_name",'contact_email', 'action']
 
         return render_template('list_without_alternance.html', lenght = len(attributs), title = attributs,  user_candidacy=Users.get_list_without_alternance())
- 
-def disp_histogram_plot(df_to_disp):
-    
-    fig = px.histogram(df_to_disp, x='Alternance', title = 'Apprenants avec / sans Alternance')
 
-    fig.update_layout(height=400, width=400)
-
-    plot_json = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-
-    return plot_json
 
 @app.route('/show_histogram')
 def show_histogram():
@@ -213,7 +204,7 @@ def show_histogram():
     # Returns:
     #     [str]: [Show histogram page]
     # """
-
+        # Prepare histogram of Apprenants with and witout alternance
         list_no_alternance= Users.get_list_without_alternance()
         list_with_alternance = Users.get_list_with_alternance()
 
@@ -224,28 +215,34 @@ def show_histogram():
 
         for user_info in list_no_alternance:
             full_list_df = full_list_df.append({'Name': user_info['first_name']+' '+ user_info['last_name'], 'Alternance': False}, ignore_index=True)
+        
+        
+        fig = px.histogram(full_list_df, x='Alternance', title = 'Histogramme', color='Alternance')
+        fig.update_layout(height=400, width=400)
+        plot_json1 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+        # Prepare pie chart of Apprenants with and witout alternance
+        pie_df = pd.DataFrame(columns = ['Status', 'Apprenants'])
+        pie_df['Status'] = ['avec alternance', 'sans alternance']
+        pie_df['Apprenants'] = [len(full_list_df.loc[full_list_df['Alternance'] ==True]), len(full_list_df.loc[full_list_df['Alternance'] ==False])]
+        
+
+        fig = px.pie(pie_df, values='Apprenants', names='Status', title = 'Pie Chart (%)')
+        fig.update_layout(height=500, width=500)
+        plot_json2 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
         kwargs = {
-        'plot_json' : disp_histogram_plot(full_list_df),
+        'plot_json1' : plot_json1,
+        'plot_json2' : plot_json2,
         }
     
         return render_template('statistic_hist.html', **kwargs)
-
-def disp_pie_plot(df_to_disp):
-    
-    fig = px.pie(df_to_disp, values='Apprenants', names='Status', title = 'Apprenants avec / sans Alternance')
-
-    fig.update_layout(height=500, width=500)
-
-    plot_json = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-
-    return plot_json
 
 @app.route('/show_pie_chart')
 
 def show_pie_chart():
         """[Allow to generate the template of statistic_pie.html to display different statistif figures]
-
+        Useless route: CAN DELETE
     # Returns:
     #     [str]: [Show pie chart page]
     # """
@@ -285,11 +282,54 @@ def user_board_page():
     user_name = Users.find_by_user_id(id)
 
     user_name =user_name[0]['first_name'] + ' ' + user_name[0]['last_name']
-    # display_name = str(user_name['first_name'] +' '+ user_name['last_name'])
- 
-    # print(display_name.first_name)
+
     usercandidacy_attributs = ['entreprise','ville','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status', 'comment']
 
     return render_template('user_board.html', lenght = len(usercandidacy_attributs), user_name =user_name, title = usercandidacy_attributs ,user_candidacy=Candidacy.find_by_user_id(id))
 
+@app.route('/show_histogram_entreprise')
+def show_histogram_entreprise():
+        """[Allow to generate the template of statistic_hist.html to display histogram of the status of the apprenants]
 
+    # Returns:
+    #     [str]: [Show histogram page]
+    # """
+
+        # user_name = Users.find_by_user_id(id)
+
+        list_no_alternance= Users.get_list_without_alternance()
+        list_with_alternance = Users.get_list_with_alternance()
+        all_users_candidacy = Users.get_full_list()
+        all_user_registered = Users.find_all_isUsers()
+
+        get_full_id_list=[]
+
+        for info in all_user_registered:
+            get_full_id_list.append(info['id'])
+
+
+        full_list_df = pd.DataFrame(columns = ['Name', 'Alternance'])
+
+        entreprise_count_df = pd.DataFrame(columns = ['ID', 'No_Entreprise'])
+
+        for id in get_full_id_list:
+            activity = Candidacy.find_by_user_id(id)
+            entreprise_count_df = entreprise_count_df.append({'ID':id, 'No_Entreprise': len(activity)}, ignore_index=True)
+
+        fig = px.histogram(entreprise_count_df, x='No_Entreprise', title = 'Histogramme', 
+            color="No_Entreprise", range_x=[-1,entreprise_count_df['No_Entreprise'].max()+2],
+            category_orders={"No_Entreprise": range(entreprise_count_df['No_Entreprise'].max()+2)})
+        fig.update_layout(height=400, width=800)
+        plot_json1 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+
+        fig = px.pie(entreprise_count_df, names='No_Entreprise', title = 'Pie Chart (%)')
+        fig.update_layout(height=500, width=500)
+        plot_json2 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+        kwargs = {
+        'plot_json1' : plot_json1,
+        'plot_json2' : plot_json2
+        }
+    
+        return render_template('statistic_hist_entreprise.html', **kwargs)

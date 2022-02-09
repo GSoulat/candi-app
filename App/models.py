@@ -68,6 +68,13 @@ class Users(db.Model,UserMixin):
         return cls.query.filter_by(is_admin = True).all()
 
     @classmethod
+    def find_all_isUsers(cls):
+        user_info=[]
+        for info in cls.query.filter_by(is_admin = False).all():
+            user_info.append(info.json_id())
+        return user_info
+
+    @classmethod
     def find_by_user_id(cls, user_id):
         user_info=[]
         for info in cls.query.filter_by(id=user_id).all():

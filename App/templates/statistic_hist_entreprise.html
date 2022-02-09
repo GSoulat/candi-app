@@ -6,7 +6,7 @@
 
 {% block content %}
 <section>
-  <h1>Analyses statistiques des alternance d'apprenants</h1>
+  <h1>Analyses statistiques des entreprise</h1>
 
   <div class="container">
     <button type="button" class="btn btn-primary"><a href="{{ url_for('show_list_without_alternance') }}">Aprenants sans alternance</a></button>
@@ -17,23 +17,54 @@
 
 
 </section>
+
+<h1>No. Candidature pour des Apprenants</h1>
+
 <section class="row col-10 bg-white mx-auto justify-content-center">
 <!doctype html>
 <html>
 <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
-<div id="plotly-timeseries">
+<div id="plotly-timeseries1">
 <script>
     var graph1 = {{ plot_json1 | safe }};
-    Plotly.plot('plotly-timeseries', graph1, {});
+    Plotly.plot('plotly-timeseries1', graph1, {});
 
 </script>
 </div>
 
 <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
-<div id="plotly-timeseries1">
+<div id="plotly-timeseries2">
 <script>
     var graph2 = {{ plot_json2 | safe }};
-    Plotly.plot('plotly-timeseries1', graph2, {});
+    Plotly.plot('plotly-timeseries2', graph2, {});
+
+</script>
+</div>
+
+</script>
+</html>
+</section>
+
+<h1>Another different title</h1>
+
+<section class="row col-10 bg-white mx-auto justify-content-center">
+  <!doctype html>
+  <html>
+
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+<div id="plotly-timeseries3">
+<script>
+    var graph2 = {{ plot_json2 | safe }};
+    Plotly.plot('plotly-timeseries3', graph2, {});
+
+</script>
+</div>
+
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+<div id="plotly-timeseries4">
+<script>
+    var graph2 = {{ plot_json2 | safe }};
+    Plotly.plot('plotly-timeseries4', graph2, {});
 
 </script>
 </div>

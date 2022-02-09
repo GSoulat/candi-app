@@ -7,6 +7,13 @@ Board
 {% block content %}
 <section>
   <h1>Candidatures</h1>
+
+  <div>
+    <button class="btn btn-lg btn-primary mt-4 d-block" id="button">
+      <a href="{{ url_for('show_list_without_alternance') }}">Analyses statistiques</a>
+    </button>
+</div>
+
     <table cellpadding="0" cellspacing="0" border="0" class="table" data-toggle="table" data-search="true">
       <thead>
         <tr>
@@ -53,11 +60,7 @@ Board
       </button>
   </div>
   {% else %}
-  <div>
-    <button class="btn btn-lg btn-primary mt-4 d-block" id="button">
-      <a href="{{ url_for('show_list_without_alternance') }}">Analyses statistiques</a>
-    </button>
-</div>
+
   {% endif %}
 </section>
 {% endblock %}
