@@ -194,9 +194,8 @@ def show_list_without_alternance():
     # """
         attributs = ["user_fisrt_name","user_last_name",'contact_email', 'action']
 
-        # add action to view progress
-        return render_template('list_without_alternance.html', lenght = len(attributs), title = attributs, user_candidacy=Users.get_list_without_alternance())
-
+        return render_template('list_without_alternance.html', lenght = len(attributs), title = attributs,  user_candidacy=Users.get_list_without_alternance())
+ 
 def disp_histogram_plot(df_to_disp):
     
     fig = px.histogram(df_to_disp, x='Alternance', title = 'Apprenants avec / sans Alternance')
@@ -300,7 +299,7 @@ def user_board_page():
     # display_name = str(user_name['first_name'] +' '+ user_name['last_name'])
  
     # print(display_name.first_name)
-    usercandidacy_attributs = ['entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status']
+    usercandidacy_attributs = ['entreprise','ville','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status', 'comment']
 
     return render_template('user_board.html', lenght = len(usercandidacy_attributs), user_name =user_name, title = usercandidacy_attributs ,user_candidacy=Candidacy.find_by_user_id(id))
 
