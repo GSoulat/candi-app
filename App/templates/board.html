@@ -6,6 +6,7 @@ Board
 
 {% block content %}
 <section>
+
   <h1>Candidatures</h1>
 
   {% if current_user.is_admin == True %}
@@ -21,7 +22,7 @@ Board
       <thead>
         <tr>
           {% for col_name in title %}
-          <th style="text-align:left" data-sortable="true">{{ col_name }}</th>
+          <th style="rejete" data-sortable="true">{{ col_name }}</th>
           {% endfor %}
           {% if current_user.is_admin == False %}
           <th style="text-align:left"> action  </th>
@@ -33,7 +34,18 @@ Board
         <tr>
           {% for info in candidacy.keys()%}
             {% if info not in ['id','user_id'] %}
+              {% if candidacy['status'] == 'En cours' %}
+                <td data-sortable="true">{{ candidacy[info] }}</td>
+              {% elif candidacy['status'] == 'Rejeté' %}
+                <td class="rejete" data-sortable="true">{{ candidacy[info] }}</td>
+              {% elif candidacy['status'] == 'Accepté' %}
+                <td class="bg-success" data-sortable="true">{{ candidacy[info] }}</td>
+              {% elif candidacy['status'] == 'C\'est compliqué' %}
+              <td class="complique" data-sortable="true">{{ candidacy[info] }}</td>
+              {% else %}
               <td data-sortable="true">{{ candidacy[info] }}</td>
+
+              {% endif %}
             {% endif %}
           {% endfor %}
           {% if current_user.is_admin == False %}
@@ -53,14 +65,15 @@ Board
           </td>
           {% endif %}
         </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+ 
+      {% endfor %}
+    </tbody>
+  </table>
   {% if current_user.is_admin == False %}
-    <div>
-      <button class="btn btn-lg btn-primary mt-4 d-block" id="button">
-        <a href="{{ url_for('add_candidature') }}">Ajouter candidature</a>
-      </button>
+  <div>
+    <button class="btn btn-lg mt-5 d-block button">
+      <a href="{{ url_for('add_candidature') }}">Ajouter candidature</a>
+    </button>
   </div>
   {% else %}
 

@@ -1,18 +1,22 @@
 from collections import UserString
 from flask import render_template, redirect, url_for, flash, request
-from App import db, app
-from datetime import date
+
+from App import db, app, mail
+from datetime import date, datetime
 from .models import Users, Candidacy
-from .forms import Login, AddCandidacy, ModifyCandidacy, ModifyPassword, ModifyProfile
+from .forms import Login, AddCandidacy, ModifyCandidacy, ModifyPassword, ModifyProfile, CheckEmail, CheckPwd, AddCandidacy_verif
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
-
+from flask_mail import Mail, Message
 import plotly.express as px
 import plotly
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import json as js
 import pandas as pd
+import random
+import string
+
 
 @app.route('/')
 @app.route('/home')
@@ -23,6 +27,7 @@ def home_page():
         [str]: [home page code]
     """
     return render_template('home.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -36,14 +41,14 @@ def login_page():
         user = Users.query.filter_by(email_address=form.email.data).first()
         if user and check_password_hash(user.password_hash, form.password.data):
             login_user(user)
-            flash(f"Vous êtes connecté en tant que : {user.first_name} {user.last_name}",category="success")
+            flash(
+                f"Vous êtes connecté en tant que : {user.first_name} {user.last_name}", category="success")
             return redirect(url_for('board_page'))
         else:
-            flash('Adresse email ou mot de passe invalide',category="danger")
-    return render_template('login.html',form=form)
+            flash('Adresse email ou mot de passe invalide', category="danger")
+    return render_template('login.html', form=form)
 
-
-@app.route('/board', methods=['GET','POST'])
+@app.route('/board', methods=['GET', 'POST'])
 @login_required
 def board_page():
     """[Allow to generate the template of board.html on board path, if user is authenticated else return on login]
@@ -51,19 +56,23 @@ def board_page():
     Returns:
         [str]: [board page code different if the user is admin or not]
     """
-    admin_candidacy_attributs = ["user_fisrt_name",'entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status']
-    usercandidacy_attributs = ['entreprise', 'ville entreprise','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status','comment']
+    admin_candidacy_attributs = ["user_fisrt_name", 'entreprise',
+                                 'contact_full_name', 'contact_email', 'contact_mobilephone', 'date', 'status']
+    usercandidacy_attributs = ['entreprise', 'ville entreprise', 'contact_full_name',
+                               'contact_email', 'contact_mobilephone', 'date', 'status', 'comment']
 
-    if (current_user.is_admin == True):  
-        return render_template('board.html', lenght = len(admin_candidacy_attributs), title = admin_candidacy_attributs, user_candidacy=Candidacy.get_all_in_list_with_user_name())
+    if (current_user.is_admin == True):
+        return render_template('board.html', lenght=len(admin_candidacy_attributs), title=admin_candidacy_attributs, user_candidacy=Candidacy.get_all_in_list_with_user_name())
     else:
-        return render_template('board.html', lenght = len(usercandidacy_attributs), title = usercandidacy_attributs ,user_candidacy=Candidacy.find_by_user_id(current_user.id))
+        return render_template('board.html', lenght=len(usercandidacy_attributs), title=usercandidacy_attributs, user_candidacy=Candidacy.find_by_user_id(current_user.id))
+
 
 @app.route('/profile/')
 @login_required
 def profile_page():
 
     return render_template('profile.html')
+
 
 @app.route('/modify_profile/', methods=['GET', 'POST'])
 @login_required
@@ -75,29 +84,39 @@ def modify_profile_page():
         current_user.first_name = form.first_name.data
         current_user.email_address = form.email_address.data
         current_user.telephone_number = form.telephone_number.data
-        
         db.session.add(current_user)
         db.session.commit()
-        flash(f"Votre profil a été modifié avec succès.",category="success")
+        flash(f"Votre profil a été modifié avec succès.", category="success")
 
         return redirect(url_for('profile_page'))
-    
+
     return render_template('modify_profile.html', form=form, current_user=current_user)
+
 
 @app.route('/stat')
 @login_required
 def stat_page():
-    return render_template('stat.html')
+    df = pd.DataFrame(Candidacy.query.join(Users).with_entities(Users.first_name,Users.last_name,Users.email_address,Candidacy.status, Candidacy.entreprise).all(),columns=["first_name","last_name","mail","status","enterprise"])
+    df["full_name"] = df["first_name"] + " " + df["last_name"]
+    df["alternance"] = False
+    df["alternance"].loc[df["status"]=="Alternance"] = True
+    fig1 = px.histogram(df["full_name"])
+    graphJSON1 = js.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
+    fig2 = px.pie(df[["mail","alternance"]].groupby(["mail"]).sum(),names="alternance")
+    graphJSON2 = js.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
+    return render_template('stat.html',graph1=graphJSON1, graph2=graphJSON2)
+
 
 @app.route('/logout')
 def logout_page():
     """[Allows to disconnect the user and redirect to the home page]
     """
     logout_user()
-    flash('Vous êtes correctement déconnecté',category="success")
+    flash('Vous êtes correctement déconnecté', category="success")
     return redirect(url_for('home_page'))
 
-@app.route('/candidature', methods= ['GET', 'POST'])
+
+@app.route('/candidature', methods=['GET', 'POST'])
 def add_candidature():
     """[Allow to generate the template of add_candidacy.html on candidacy path to add candidacy in the BDD if validate and redirect to the board page when finish]
 
@@ -105,11 +124,36 @@ def add_candidature():
         [str]: [Candidacy code page]
     """
     form = AddCandidacy()
+
     if form.validate_on_submit():
-        Candidacy(user_id = current_user.id, status = form.status.data, entreprise = form.entreprise.data, ville_entreprise = form.ville_entreprise.data, contact_full_name = form.contact_full_name.data, contact_email = form.contact_email.data, contact_mobilephone = form.contact_mobilephone.data, date =form.date.data).save_to_db()
+        if form.entreprise.data.startswith('- ') == False:
+            print(form.entreprise.label.text)
+            entreprise_similaire = Candidacy.check_entreprise_exist(form.entreprise.data)
+
+            if entreprise_similaire != []:
+                entreprise_similaire.append('- ' + form.entreprise.data)
+                #entreprise_similaire.append('')
+                form = AddCandidacy_verif()
+                form.entreprise.choices = entreprise_similaire
+                flash('Merci de sélectionner l\'ortographe du nom de l\'entreprise', category='danger' )
+                return render_template('add_candidacy.html', form=form, Date_Today=date.today())
+
+        if form.entreprise.data.startswith('- '): form.entreprise.data = form.entreprise.data[2:]
+        Candidacy(user_id = current_user.id, 
+            status = form.status.data,
+            entreprise = form.entreprise.data,
+            ville_entreprise = form.ville_entreprise.data,
+            contact_full_name = form.contact_full_name.data,
+            contact_email = form.contact_email.data,
+            contact_mobilephone = form.contact_mobilephone.data,
+            date =form.date.data).save_to_db()
+
         flash('Nouvelle Candidature ajouté ', category='success')
         return redirect(url_for('board_page'))
-    return render_template('add_candidacy.html', form=form)
+    return render_template('add_candidacy.html', form=form, Date_Today=date.today())
+
+
+
 
 @app.route('/modify_password', methods=['GET', 'POST'])
 @login_required
@@ -122,15 +166,17 @@ def modify_password():
     form = ModifyPassword()
     if form.validate_on_submit():
         if current_user.email_address == form.email.data and check_password_hash(current_user.password_hash, form.current_password.data):
-            current_user.password_hash = generate_password_hash(form.new_password.data, method='sha256')
+            current_user.password_hash = generate_password_hash(
+                form.new_password.data, method='sha256')
             db.session.add(current_user)
             db.session.commit()
 
-            flash(f"Votre mot de passe a été modifié",category="success")
+            flash(f"Votre mot de passe a été modifié", category="success")
             return redirect(url_for('board_page'))
         else:
-            flash('Adresse email ou mot de passe invalide',category="danger")
-    return render_template('modify_password.html',form=form)
+            flash('Adresse email ou mot de passe invalide', category="danger")
+    return render_template('modify_password.html', form=form)
+
 
 @app.route('/modify_candidacy', methods=['GET', 'POST'])
 @login_required
@@ -142,10 +188,10 @@ def modify_candidacy():
     """
     form = ModifyCandidacy()
     candidacy_id = request.args.get('id')
-    candidacy = Candidacy.query.filter_by(id = candidacy_id).first()
+    candidacy = Candidacy.query.filter_by(id=candidacy_id).first()
     print(candidacy.json())
     if form.validate_on_submit():
-        
+
         if candidacy:
             candidacy.entreprise = form.entreprise.data
             candidacy.ville_entreprise = form.ville_entreprise.data
@@ -153,52 +199,58 @@ def modify_candidacy():
             candidacy.contact_email = form.contact_email.data
             candidacy.contact_mobilephone = form.contact_mobilephone.data
             candidacy.status = form.status.data
-            candidacy.date =form.date.data
+            candidacy.date = form.date.data
             candidacy.comment = form.comment.data
             db.session.commit()
 
-            flash(f"La candidature a bien été modifié",category="success")
+            flash(f"La candidature a bien été modifié", category="success")
             return redirect(url_for('board_page'))
         else:
-            flash('Something goes wrong',category="danger")
+            flash('Something goes wrong', category="danger")
     form.comment.data = candidacy.comment
-    return render_template('modify_candidacy.html', form=form , candidacy=candidacy.json())
-    
+    return render_template('modify_candidacy.html', form=form, candidacy=candidacy.json())
+
+
 @app.route('/delete_candidacy', methods=['GET', 'POST'])
 def delete_candidacy():
     """[Allow to delete candidacy in the BDD with the id and redirect to board page]"""
 
     candidacy_id = request.args.get('id')
     Candidacy.query.filter_by(id=candidacy_id).first().delete_from_db()
-    flash("Candidature supprimé avec succés",category="success")
+    flash("Candidature supprimé avec succés", category="success")
 
     return redirect(url_for('board_page'))
 
-@app.route('/list_with_alternance', methods= ['GET', 'POST'])
+
+@app.route('/list_with_alternance', methods=['GET', 'POST'])
 def show_list_with_alternance():
-        """[Allow to generate the template of list_with_alternance.html to display the list of students that have found an alternance]
+    """[Allow to generate the template of list_with_alternance.html to display the list of students that have found an alternance]
 
-    # Returns:
-    #     [str]: [List with alternance page]
-    # """
-        attributs = ["user_fisrt_name","user_last_name",'contact_email', 'status','entreprise']
-        return render_template('list_with_alternance.html', lenght = len(attributs), title = attributs, user_candidacy=Users.get_list_with_alternance())
+# Returns:
+#     [str]: [List with alternance page]
+# """
+    attributs = ["user_fisrt_name", "user_last_name",
+                 'contact_email', 'status', 'entreprise']
+    return render_template('list_with_alternance.html', lenght=len(attributs), title=attributs, user_candidacy=Users.get_list_with_alternance())
 
 
-@app.route('/list_without_alternance', methods= ['GET', 'POST'])
+@app.route('/list_without_alternance', methods=['GET', 'POST'])
 def show_list_without_alternance():
-        """[Allow to generate the template of list_with_alternance.html to display the list of students that have yet found an alternance]
+    """[Allow to generate the template of list_with_alternance.html to display the list of students that have yet found an alternance]
 
-    # Returns:
-    #     [str]: [List without alternance page]
-    # """
-        attributs = ["user_fisrt_name","user_last_name",'contact_email', 'action']
+# Returns:
+#     [str]: [List without alternance page]
+# """
+    attributs = ["user_fisrt_name",
+                 "user_last_name", 'contact_email', 'action']
 
-        return render_template('list_without_alternance.html', lenght = len(attributs), title = attributs,  user_candidacy=Users.get_list_without_alternance())
+    # add action to view progress
+    return render_template('list_without_alternance.html', lenght=len(attributs), title=attributs, user_candidacy=Users.get_list_without_alternance())
 
 
 @app.route('/show_histogram')
 def show_histogram():
+
         """[Allow to generate the template of statistic_hist.html to display histogram of the status of the apprenants]
 
     # Returns:
@@ -238,39 +290,9 @@ def show_histogram():
     
         return render_template('statistic_hist.html', **kwargs)
 
-@app.route('/show_pie_chart')
-
-def show_pie_chart():
-        """[Allow to generate the template of statistic_pie.html to display different statistif figures]
-        Useless route: CAN DELETE
-    # Returns:
-    #     [str]: [Show pie chart page]
-    # """
-
-        list_no_alternance= Users.get_list_without_alternance()
-        list_with_alternance = Users.get_list_with_alternance()
-
-        full_list_df = pd.DataFrame(columns = ['Name', 'Alternance'])
-
-        for user_info in list_with_alternance:
-            full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[0], 'Alternance': True}, ignore_index=True)
-
-        for user_info in list_no_alternance:
-            full_list_df = full_list_df.append({'Name': user_info['first_name']+' '+ user_info['last_name'], 'Alternance': False}, ignore_index=True)
-
-        pie_df = pd.DataFrame(columns = ['Status', 'Apprenants'])
-        pie_df['Status'] = ['avec alternance', 'sans alternance']
-        pie_df['Apprenants'] = [len(full_list_df.loc[full_list_df['Alternance'] ==True]), len(full_list_df.loc[full_list_df['Alternance'] ==False])]
-
-        kwargs = {
-        # 'plot_json' :disp_pie_plot(pie_df),
-        }
-    
-        return render_template('statistic_pie.html', **kwargs)
-
 
 @app.route('/user_board', methods=['GET','POST'])
-# @login_require
+
 def user_board_page():
     """[Allow to generate the template of board.html on board path, if user is authenticated else return on login]
 
@@ -285,7 +307,7 @@ def user_board_page():
 
     usercandidacy_attributs = ['entreprise','ville','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status', 'comment']
 
-    return render_template('user_board.html', lenght = len(usercandidacy_attributs), user_name =user_name, title = usercandidacy_attributs ,user_candidacy=Candidacy.find_by_user_id(id))
+    return render_template('user_board.html', lenght=len(usercandidacy_attributs), user_name=user_name, title=usercandidacy_attributs, user_candidacy=Candidacy.find_by_user_id(id))
 
 @app.route('/show_histogram_entreprise')
 def show_histogram_entreprise():
@@ -402,5 +424,45 @@ def list_entreprise_page():
     for info in full_list:
         if info not in unique_list:
             unique_list.append(info)
-
+            
     return render_template('list_entreprise.html', lenght = len(attributs), title = attributs, user_candidacy=unique_list)
+
+@app.route('/checkemail',methods=["POST","GET"])
+def check_email_page():
+    form = CheckEmail()
+    check = Users.query.filter_by(email_address=form.email.data).first()
+
+    if check:
+            hashCode = ''.join(random.choices(string.ascii_letters + string.digits, k=24))
+            check.hashCode = hashCode
+            db.session.commit()
+            msg = Message('Confirm Password Change', sender = 'candy59.app@gmail.com', recipients = [form.email.data])
+            
+            msg.body = "Hello,\nWe've received a request to reset your password. If you want to reset your password, click the link below and enter your new password\n http://localhost:5000/new_password/" + check.hashCode
+            print(msg)
+            mail.send(msg)
+            return redirect(url_for('login_page'))
+    return render_template('check_email.html', form=form)
+
+
+@app.route("/new_password/<string:hashCode>",methods=["GET","POST"])
+def hashcode(hashCode):
+    form = CheckPwd()
+    check = Users.query.filter_by(hashCode=hashCode).first() 
+    if check:
+        if request.method == 'POST':
+            passw = form.passw.data
+            cpassw = form.cpassw.data
+            if passw == cpassw:
+                check.password_hash = generate_password_hash(passw, method='sha256')
+                check.hashCode= None
+                db.session.commit()
+                return redirect(url_for('login_page'))
+            else:
+                flash('error')
+                return render_template('new_password.html', form=form)
+        else:
+            return render_template('new_password.html', form=form)
+    else:
+        return render_template('new_password.html', form=form)
+
