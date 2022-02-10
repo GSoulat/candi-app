@@ -12,6 +12,7 @@ h1 {
   margin-bottom: 15px;
   border-radius: 5px 5px 0 0;
   line-height: 50px;
+  background-color: red;
 }
 
 section h2 {
@@ -77,16 +78,16 @@ th {
   line-height: 30px;
 }
 
-#button {
+.button {
   margin: 0 auto;
+  background-color: red;
 }
 
 label {
   color: #fff;
 }
 section {
-  margin: 50px;
-  border-radius: 20px;
+  margin: 30px;
 }
 
 a, a:hover {
