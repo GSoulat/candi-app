@@ -211,10 +211,10 @@ def show_histogram():
         full_list_df = pd.DataFrame(columns = ['Name', 'Alternance'])
 
         for user_info in list_with_alternance:
-            full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[0], 'Alternance': True}, ignore_index=True)
+            full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[0], 'Alternance': 'avec alternance'}, ignore_index=True)
 
         for user_info in list_no_alternance:
-            full_list_df = full_list_df.append({'Name': user_info['first_name']+' '+ user_info['last_name'], 'Alternance': False}, ignore_index=True)
+            full_list_df = full_list_df.append({'Name': user_info['first_name']+' '+ user_info['last_name'], 'Alternance': 'sans alternance'}, ignore_index=True)
         
         
         fig = px.histogram(full_list_df, x='Alternance', title = 'Histogramme', color='Alternance')
@@ -224,11 +224,11 @@ def show_histogram():
         # Prepare pie chart of Apprenants with and witout alternance
         pie_df = pd.DataFrame(columns = ['Status', 'Apprenants'])
         pie_df['Status'] = ['avec alternance', 'sans alternance']
-        pie_df['Apprenants'] = [len(full_list_df.loc[full_list_df['Alternance'] ==True]), len(full_list_df.loc[full_list_df['Alternance'] ==False])]
+        pie_df['Apprenants'] = [len(full_list_df.loc[full_list_df['Alternance'] =='avec alternance']), len(full_list_df.loc[full_list_df['Alternance'] =='sans alternance'])]
         
 
         fig = px.pie(pie_df, values='Apprenants', names='Status', title = 'Pie Chart (%)')
-        fig.update_layout(height=500, width=500)
+        fig.update_layout(height=500, width=500, legend_title_text='Alternance')
         plot_json2 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
         kwargs = {
@@ -263,7 +263,7 @@ def show_pie_chart():
         pie_df['Apprenants'] = [len(full_list_df.loc[full_list_df['Alternance'] ==True]), len(full_list_df.loc[full_list_df['Alternance'] ==False])]
 
         kwargs = {
-        'plot_json' : disp_pie_plot(pie_df),
+        # 'plot_json' :disp_pie_plot(pie_df),
         }
     
         return render_template('statistic_pie.html', **kwargs)
@@ -302,34 +302,65 @@ def show_histogram_entreprise():
         all_users_candidacy = Users.get_full_list()
         all_user_registered = Users.find_all_isUsers()
 
-        get_full_id_list=[]
+        get_full_name_list=[]
 
         for info in all_user_registered:
-            get_full_id_list.append(info['id'])
+            get_full_name_list.append([info['id'], info['email_address']])
 
 
-        full_list_df = pd.DataFrame(columns = ['Name', 'Alternance'])
+        entreprise_count_df = pd.DataFrame(columns = ['ID', 'No_Entreprise', 'No_Entreprise_str', 'Alternance'])
 
-        entreprise_count_df = pd.DataFrame(columns = ['ID', 'No_Entreprise'])
+        list_email_no_alternance = []
+        for user_info in list_no_alternance:
+            list_email_no_alternance.append(user_info['email_address'])
+        
+        for info in get_full_name_list:
+            activity = Candidacy.find_by_user_id(info[0])
+            if info[1] in list_email_no_alternance:
+                entreprise_count_df = entreprise_count_df.append({'ID':id, 'No_Entreprise': len(activity), 'No_Entreprise_str': str(len(activity)),'Alternance':'sans alternance'}, 
+                    ignore_index=True)
+            else:
+                entreprise_count_df = entreprise_count_df.append({'ID':id, 'No_Entreprise': len(activity),'Alternance':'avec alternance'}, 
+                    ignore_index=True)
 
-        for id in get_full_id_list:
-            activity = Candidacy.find_by_user_id(id)
-            entreprise_count_df = entreprise_count_df.append({'ID':id, 'No_Entreprise': len(activity)}, ignore_index=True)
+        # Sort database
+        entreprise_count_df = entreprise_count_df.sort_values(by=['No_Entreprise'])
 
-        fig = px.histogram(entreprise_count_df, x='No_Entreprise', title = 'Histogramme', 
-            color="No_Entreprise", range_x=[-1,entreprise_count_df['No_Entreprise'].max()+2],
+        fig = px.histogram(entreprise_count_df, x='No_Entreprise', title = 'Histogramme: No. Entreprise pour des Apprenants',color="No_Entreprise",
             category_orders={"No_Entreprise": range(entreprise_count_df['No_Entreprise'].max()+2)})
+
+        fig.update_layout(yaxis_title="No. des Apprenants")
+        fig.update_xaxes(type='category')       
+
+        # fig = px.histogram(entreprise_count_df, x='No_Entreprise', title = 'Histogramme: No. Entreprise pour des Apprenants', 
+        #     color="No_Entreprise", range_x=[-1,entreprise_count_df['No_Entreprise'].max()+2],
+        #     category_orders={"No_Entreprise": range(entreprise_count_df['No_Entreprise'].max()+2)}
+
+
         fig.update_layout(height=400, width=800)
         plot_json1 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
 
         fig = px.pie(entreprise_count_df, names='No_Entreprise', title = 'Pie Chart (%)')
-        fig.update_layout(height=500, width=500)
+
+        fig.update_layout(height=500, width=500, legend_title_text='No. Entreprise')
         plot_json2 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+        sequence_hist = [*range(entreprise_count_df['No_Entreprise'].max()+2)] 
+        fig = px.histogram(entreprise_count_df, x='No_Entreprise', title = 'Histogramme: No. Entreprise pour Apprenants avec / sans Alternance', 
+            color="Alternance", barmode="group",
+            category_orders={"No_Entreprise": sequence_hist}) # Need to fix this
+        
+
+        fig.update_layout(height=400, width=800, yaxis_title="No. of Apprenants")
+        fig.update_xaxes(type='category')   
+        plot_json3 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
 
         kwargs = {
         'plot_json1' : plot_json1,
-        'plot_json2' : plot_json2
+        'plot_json2' : plot_json2,
+        'plot_json3' : plot_json3
         }
     
         return render_template('statistic_hist_entreprise.html', **kwargs)
