@@ -91,7 +91,6 @@ class Users(db.Model,UserMixin):
             if (user_info[0] not in user_with_alternance_id) and (user_info[0] not in unique_user_without_alternance_id):
                 user_without_alternance.append(user_info)
                 unique_user_without_alternance_id.append (user_info[0]) 
-            
         return user_without_alternance
     
     @classmethod
