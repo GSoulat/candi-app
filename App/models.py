@@ -49,7 +49,16 @@ class Users(db.Model, UserMixin):
             'email_address': self.email_address,
             'telephone_number': self.telephone_number,
             'is_admin': self.is_admin
-        }
+            }
+    
+    def json_id(self):
+        return {
+            'id': self.id, 
+            'last_name': self.last_name, 
+            'first_name': self.first_name,
+            'email_address': self.email_address,
+            }
+
 
     @classmethod
     def find_by_title(cls, user_id):
@@ -62,6 +71,13 @@ class Users(db.Model, UserMixin):
     @classmethod
     def find_all_isAdmin(cls):
         return cls.query.filter_by(is_admin=True).all()
+
+    @classmethod
+    def find_all_isUsers(cls):
+        user_info=[]
+        for info in cls.query.filter_by(is_admin = False).all():
+            user_info.append(info.json_id())
+        return user_info
 
     @classmethod
     def find_by_user_id(cls, user_id):
@@ -83,20 +99,25 @@ class Users(db.Model, UserMixin):
     @classmethod
     def get_list_without_alternance(cls):
 
-        alternance_list = cls.query.join(Candidacy).with_entities(
-            Users.id, Users.first_name, Users.last_name, Users.email_address, Candidacy.status, Candidacy.entreprise).all()
-        user_with_alternance_id = []
+        alternance_list = cls.query.join(Candidacy).with_entities(Users.id, Users.first_name,Users.last_name,Users.email_address,Candidacy.status, Candidacy.entreprise).all()
+
+        user_with_alternance_id=[]
         unique_user_without_alternance_id = []
-        user_without_alternance = []
+        user_without_alternance=[]
+        all_user_list=[]
+
+        for info in cls.query.filter_by(is_admin = False).all():
+            all_user_list.append(info.json_id())
 
         for user_info in alternance_list:
             if user_info[4] == 'Alternance':
-                user_with_alternance_id.append(user_info[0])
-        print(user_with_alternance_id)
-        for user_info in alternance_list:
-            if (user_info[0] not in user_with_alternance_id) and (user_info[0] not in unique_user_without_alternance_id):
+                user_with_alternance_id.append (user_info[0])
+
+        for user_info in all_user_list:
+            if (user_info['id'] not in user_with_alternance_id) and (user_info['id'] not in unique_user_without_alternance_id):
                 user_without_alternance.append(user_info)
-                unique_user_without_alternance_id.append (user_info[0]) 
+                unique_user_without_alternance_id.append (user_info['id']) 
+   
         return user_without_alternance
 
     @classmethod
@@ -185,6 +206,14 @@ class Candidacy(db.Model):
         for candidacy in cls.query.join(Users).with_entities(Users.first_name, cls.id, cls.entreprise, cls.contact_full_name, cls.contact_email, cls.contact_mobilephone, cls.date, cls.status).all():
             candidacy_list.append(candidacy)
         return candidacy_list
+
+    @classmethod
+    def get_all_in_list_entreprise(cls):
+        entreprise_list=[]
+        # for entreprise_info in cls.query.join(Users).with_entities(Users.first_name, Users.last_name, cls.user_id ,cls.entreprise,cls.entreprise_ville, cls.contact_full_name, cls.contact_email, cls.contact_mobilephone).all():
+        for entreprise_info in cls.query.join(Users).with_entities(cls.user_id ,cls.entreprise,cls.ville_entreprise, cls.contact_full_name, cls.contact_email, cls.contact_mobilephone).all():
+            entreprise_list.append(entreprise_info)
+        return entreprise_list
 
     def save_to_db(self):
         db.session.add(self)

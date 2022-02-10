@@ -248,103 +248,51 @@ def show_list_without_alternance():
     return render_template('list_without_alternance.html', lenght=len(attributs), title=attributs, user_candidacy=Users.get_list_without_alternance())
 
 
-def disp_histogram_plot(df_to_disp):
-
-    fig = px.histogram(df_to_disp, x='Alternance',
-                       title='Apprenants avec / sans Alternance')
-
-    fig.update_layout(height=400, width=400)
-
-    plot_json = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-
-    return plot_json
-
-
 @app.route('/show_histogram')
 def show_histogram():
-    """[Allow to generate the template of statistic_hist.html to display histogram of the status of the apprenants]
 
-# Returns:
-#     [str]: [Show histogram page]
-# """
-    full_list = Users.get_full_list()
-    full_list_df = pd.DataFrame(columns=['Name', 'Alternance'])
-    unique_list = []
+        """[Allow to generate the template of statistic_hist.html to display histogram of the status of the apprenants]
 
-    # find all the ones with alternance first
-    for user_info in full_list:
-        if (user_info[1] not in unique_list) and (user_info[4] == 'Alternance'):
-            unique_list.append(user_info[1])
-            full_list_df = full_list_df.append(
-                {'Name': user_info[1]+' ' + user_info[2], 'Alternance': True}, ignore_index=True)
+    # Returns:
+    #     [str]: [Show histogram page]
+    # """
+        # Prepare histogram of Apprenants with and witout alternance
+        list_no_alternance= Users.get_list_without_alternance()
+        list_with_alternance = Users.get_list_with_alternance()
 
-    # find all the ones without alternance
-    for user_info in full_list:
-        if (user_info[1] not in unique_list):
-            unique_list.append(user_info[1])
-            full_list_df = full_list_df.append(
-                {'Name': user_info[1]+' ' + user_info[2], 'Alternance': False}, ignore_index=True)
+        full_list_df = pd.DataFrame(columns = ['Name', 'Alternance'])
 
-    kwargs = {
-        'plot_json': disp_histogram_plot(full_list_df),
-    }
+        for user_info in list_with_alternance:
+            full_list_df = full_list_df.append({'Name': user_info[1]+' '+ user_info[0], 'Alternance': 'avec alternance'}, ignore_index=True)
 
-    return render_template('statistic_hist.html', **kwargs)
+        for user_info in list_no_alternance:
+            full_list_df = full_list_df.append({'Name': user_info['first_name']+' '+ user_info['last_name'], 'Alternance': 'sans alternance'}, ignore_index=True)
+        
+        
+        fig = px.histogram(full_list_df, x='Alternance', title = "Nombre d'apprenant en alternance", color='Alternance')
+        fig.update_layout(height=400, width=600, yaxis_title="No. of Apprenants")
+        plot_json1 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
+        # Prepare pie chart of Apprenants with and witout alternance
+        pie_df = pd.DataFrame(columns = ['Status', 'Apprenants'])
+        pie_df['Status'] = ['avec alternance', 'sans alternance']
+        pie_df['Apprenants'] = [len(full_list_df.loc[full_list_df['Alternance'] =='avec alternance']), len(full_list_df.loc[full_list_df['Alternance'] =='sans alternance'])]
+        
 
-def disp_pie_plot(df_to_disp):
+        fig = px.pie(pie_df, values='Apprenants', names='Status', title = "Pourcentage d'apprenant en alternance")
+        fig.update_layout(height=500, width=500, legend_title_text='Alternance')
+        plot_json2 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
-    fig = px.pie(df_to_disp, values='Apprenants', names='Status',
-                 title='Apprenants avec / sans Alternance')
-
-    fig.update_layout(height=500, width=500)
-
-    plot_json = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-
-    return plot_json
-
-
-@app.route('/show_pie_chart')
-def show_pie_chart():
-    """[Allow to generate the template of statistic_pie.html to display different statistif figures]
-
-# Returns:
-#     [str]: [Show pie chart page]
-# """
-
-    full_list = Users.get_full_list()
-    full_list_df = pd.DataFrame(columns=['Name', 'Alternance'])
-    unique_list = []
-
-    # find all the ones with alternance first
-    for user_info in full_list:
-        if (user_info[1] not in unique_list) and (user_info[4] == 'Alternance'):
-            unique_list.append(user_info[1])
-            full_list_df = full_list_df.append(
-                {'Name': user_info[1]+' ' + user_info[2], 'Alternance': True}, ignore_index=True)
-
-    apprenant_with_alternance = len(unique_list)
-
-    for user_info in full_list:
-        if (user_info[1] not in unique_list):
-            unique_list.append(user_info[1])
-            full_list_df = full_list_df.append(
-                {'Name': user_info[1]+' ' + user_info[2], 'Alternance': False}, ignore_index=True)
-
-    pie_df = pd.DataFrame(columns=['Status', 'Apprenants'])
-    pie_df['Status'] = ['avec alternance', 'sans alternance']
-    pie_df['Apprenants'] = [apprenant_with_alternance,
-                            (len(unique_list) - apprenant_with_alternance)]
-
-    kwargs = {
-        'plot_json': disp_pie_plot(pie_df),
-    }
-
-    return render_template('statistic_pie.html', **kwargs)
+        kwargs = {
+        'plot_json1' : plot_json1,
+        'plot_json2' : plot_json2,
+        }
+    
+        return render_template('statistic_hist.html', **kwargs)
 
 
-@app.route('/user_board', methods=['GET', 'POST'])
-@login_required
+@app.route('/user_board', methods=['GET','POST'])
+
 def user_board_page():
     """[Allow to generate the template of board.html on board path, if user is authenticated else return on login]
 
@@ -355,15 +303,129 @@ def user_board_page():
     id = request.args.get('id')
     user_name = Users.find_by_user_id(id)
 
-    user_name = user_name[0]['first_name'] + ' ' + user_name[0]['last_name']
-    # display_name = str(user_name['first_name'] +' '+ user_name['last_name'])
+    user_name =user_name[0]['first_name'] + ' ' + user_name[0]['last_name']
 
-    # print(display_name.first_name)
-    usercandidacy_attributs = ['entreprise', 'contact_full_name',
-                               'contact_email', 'contact_mobilephone', 'date', 'status']
+    usercandidacy_attributs = ['entreprise','ville','contact_full_name','contact_email', 'contact_mobilephone' ,'date','status', 'comment']
 
     return render_template('user_board.html', lenght=len(usercandidacy_attributs), user_name=user_name, title=usercandidacy_attributs, user_candidacy=Candidacy.find_by_user_id(id))
 
+@app.route('/show_histogram_entreprise')
+def show_histogram_entreprise():
+        """[Allow to generate the template of statistic_hist.html to display histogram of the status of the apprenants]
+
+    # Returns:
+    #     [str]: [Show histogram page]
+    # """
+
+        # user_name = Users.find_by_user_id(id)
+
+        list_no_alternance= Users.get_list_without_alternance()
+        list_with_alternance = Users.get_list_with_alternance()
+        all_users_candidacy = Users.get_full_list()
+        all_user_registered = Users.find_all_isUsers()
+
+        get_full_name_list=[]
+
+        for info in all_user_registered:
+            get_full_name_list.append([info['id'], info['email_address']])
+
+
+        entreprise_count_df = pd.DataFrame(columns = ['ID', 'No_Entreprise', 'No_Entreprise_str', 'Alternance'])
+
+        list_email_no_alternance = []
+        for user_info in list_no_alternance:
+            list_email_no_alternance.append(user_info['email_address'])
+        
+        for info in get_full_name_list:
+            activity = Candidacy.find_by_user_id(info[0])
+            if info[1] in list_email_no_alternance:
+                entreprise_count_df = entreprise_count_df.append({'ID':id, 'No_Entreprise': len(activity), 'No_Entreprise_str': str(len(activity)),'Alternance':'sans alternance'}, 
+                    ignore_index=True)
+            else:
+                entreprise_count_df = entreprise_count_df.append({'ID':id, 'No_Entreprise': len(activity),'Alternance':'avec alternance'}, 
+                    ignore_index=True)
+
+        # Sort database
+        entreprise_count_df = entreprise_count_df.sort_values(by=['No_Entreprise'])
+        sequence_hist = [*range(entreprise_count_df['No_Entreprise'].max()+2)] 
+
+        # Display histograme #1 
+        fig = px.histogram(entreprise_count_df, x='No_Entreprise', title = 'Nombre de candidature par apprenant',color="No_Entreprise",
+            category_orders={"No_Entreprise": sequence_hist})
+
+        fig.update_layout(yaxis_title="No. des Apprenants", xaxis_title="No. des Candidature")
+        fig.update_xaxes(type='category')       
+        fig.update_layout(height=400, width=600, legend_title_text='No. Candidature')
+        plot_json1 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+        # Display pie chart #1 
+        fig = px.pie(entreprise_count_df, names='No_Entreprise', title = 'Pourcentage de candidature par apprenant')
+
+        fig.update_layout(height=500, width=500, legend_title_text='No. Candidature')
+        plot_json2 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+        # Display histograme #2
+        fig = px.histogram(entreprise_count_df, x='No_Entreprise', title = 'Répartition des apprenants par nombre de candidature', 
+            color="Alternance", barmode="group",
+            category_orders={"No_Entreprise": sequence_hist})
+    
+        fig.update_layout(height=400, width=600, yaxis_title="No. of Apprenants", xaxis_title="No. des Apprenants")
+        fig.update_xaxes(type='category')   
+        plot_json3 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+
+        # Display histograme #4
+        unique_list_df=pd.DataFrame(columns = ['User_ID', 'Entreprise', 'Ville', 'Contact_Full_Name', 'Contact_Email', 'Contact_Mobilephone'])
+        full_list = Candidacy.get_all_in_list_entreprise()
+        unique_list = []
+
+        # 1cls.user_id ,2cls.entreprise,3cls.ville_entreprise, 4cls.contact_full_name, 5cls.contact_email, 6cls.contact_mobilephone
+
+        for info in full_list:
+            if info not in unique_list:
+                unique_list.append(info)
+                unique_list_df = unique_list_df.append({'User_ID': info[0], 'Entreprise':info[1], 'Ville': info[2], 
+                    'Contact_Full_Name': info[3],'Contact_Email': info[4], 'Contact_Mobilephone': info[5]}, 
+                    ignore_index=True)
+
+        
+        fig = px.histogram(unique_list_df, x='Ville', title = 'Répartition géographique des candidatures',color="Ville")
+        #     # category_orders={"No_Entreprise": sequence_hist})
+
+        fig.update_layout(yaxis_title="No. des Entreprise")
+        fig.update_xaxes(type='category')       
+        fig.update_layout(height=400, width=600)
+        plot_json4 = js.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)        
+
+        kwargs = {
+        'plot_json1' : plot_json1,
+        'plot_json2' : plot_json2,
+        'plot_json3' : plot_json3,
+        'plot_json4' : plot_json4
+        }
+    
+        return render_template('statistic_hist_entreprise.html', **kwargs)
+
+
+@app.route('/list_entreprise', methods=['GET','POST'])
+
+def list_entreprise_page():
+    """[Allow to generate the template of list_entreprise.html to display the contact information of companies]
+
+    Returns:
+        [str]: [Show list_entreprise.html]
+    """
+    attributs = ["Entreprise","ville",'contact_full_name', 'contact_email','contact_mobilephone']
+
+    # Add only unique items:
+    unique_list=[]
+    full_list = Candidacy.get_all_in_list_entreprise()
+
+    for info in full_list:
+        if info not in unique_list:
+            unique_list.append(info)
+            
+    return render_template('list_entreprise.html', lenght = len(attributs), title = attributs, user_candidacy=unique_list)
 
 @app.route('/checkemail',methods=["POST","GET"])
 def check_email_page():
@@ -403,3 +465,4 @@ def hashcode(hashCode):
             return render_template('new_password.html', form=form)
     else:
         return render_template('new_password.html', form=form)
+
