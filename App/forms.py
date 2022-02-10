@@ -19,7 +19,19 @@ class AddCandidacy(FlaskForm):
     """[Form to add candidacy]
     """
     entreprise = StringField(label='Entreprise', validators=[DataRequired()])
+    ville_entreprise = StringField(label='Ville de l\'entreprise', validators=[DataRequired()])
+    contact_full_name = StringField(label='Nom du contact', validators=[DataRequired()])
+    contact_email = StringField(label='Email du contact', validators=[DataRequired()])
+    contact_mobilephone = StringField(label='Téléphone du contact')
+    status = SelectField(label='Statut',choices=['En cours','Rejeté','Accepté','C\'est compliqué'], validators=[DataRequired()])
+    date = DateField(label='Date de la candidature',validators=[DataRequired()],format='%Y-%m-%d')
+    print("En cours d'ajout")
+    submit = SubmitField(label='Ajouter')
 
+class AddCandidacy_verif(FlaskForm):
+    """[Form to add candidacy]
+    """
+    entreprise = SelectField(label='Liste des entreprises', validators=[DataRequired()])
     ville_entreprise = StringField(label='Ville de l\'entreprise', validators=[DataRequired()])
     contact_full_name = StringField(label='Nom du contact', validators=[DataRequired()])
     contact_email = StringField(label='Email du contact', validators=[DataRequired()])
