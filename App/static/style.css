@@ -1,3 +1,47 @@
+body {
+  background-color:#F0F0F0;
+}
+
+nav {
+  background-color: #CE0033;
+}
+
+.logo {
+  width: 60%;
+  margin: 0;
+  padding: 0;
+}
+
+.user-image {
+  width:10%;
+  margin:auto;
+  padding: 0;
+}
+
+.user-image-form {
+  width:25%;
+  margin:auto;
+  padding: 0;
+}
+
+.bouton {
+  background-color: #504dc1;
+  color: white;
+}
+
+.bouton:hover {
+  box-shadow: 2px 2px 2px 2px rgb(255,208,7);
+}
+
+.item {
+  text-align: center;
+}
+
+.item:hover {
+  background-color: white;
+  color: black;
+}
+
 h1 {
   font-size: 30px;
   text-transform: uppercase;
@@ -5,6 +49,7 @@ h1 {
   text-align: center;
   margin-bottom: 15px;
 }
+
 section h2 {
   text-align: center;
 }
