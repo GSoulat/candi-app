@@ -38,7 +38,6 @@
               <td data-sortable="true">{{ candidacy[info] }}</td>
             {% endif %}
           {% endfor %}
-          <td><button type="button" class="btn bouton"><a href="{{ url_for('user_board_page', id = candidacy['id']) }}">View Progress</a></button></td>
           {% if current_user.is_admin == False %}
           <td>
             <a href="{{ url_for('modify_candidacy', id = candidacy['id']) }}">
