@@ -90,6 +90,7 @@ thead tr th:last-child{
 }
 td{
   overflow:hidden;
+  text-overflow: ellipsis;
   text-align: center;
   vertical-align: middle;
   font-weight: 300;
@@ -119,6 +120,18 @@ th {
   font-family: "Roboto", sans-serif;
   line-height: 30px;
 }
+.alternance {
+  background-color: rgba(15, 124, 5, 0.767);
+}
+.en_cours {
+  background-color: rgba(53, 104, 61, 0.575);
+}
+.rejete {
+  background-color: rgba(143, 6, 6, 0.671);
+}
+.complique {
+  background-color: rgba(56, 64, 180, 0.534);
+}
 
 .button {
   margin: 0 auto;
@@ -126,7 +139,7 @@ th {
 }
 
 label {
-  color: #fff;
+  color: rgb(0, 0, 0);
 }
 section {
   margin: 30px;

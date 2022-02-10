@@ -5,6 +5,7 @@ from flask_login import UserMixin
 import logging as lg
 from werkzeug.security import generate_password_hash
 import csv
+import difflib as dif
 
 
 @login_manager.user_loader
@@ -103,8 +104,9 @@ class Users(db.Model, UserMixin):
 
         full_list = cls.query.join(Candidacy).with_entities(
             Users.id, Users.first_name, Users.last_name, Users.email_address, Candidacy.status, Candidacy.entreprise).all()
-
         return full_list
+
+
 
     def save_to_db(self):
         db.session.add(self)
@@ -166,6 +168,16 @@ class Candidacy(db.Model):
         for candidacy in cls.query.filter_by(user_id=user_id).all():
             candidacy_list.append(candidacy.json())
         return candidacy_list
+    
+    @classmethod
+    def check_entreprise_exist(cls,entreprise):
+        entreprise_commune = []
+        for candidacy in cls.query.group_by(cls.entreprise).with_entities(cls.entreprise):
+            ratio = dif.SequenceMatcher(a=candidacy.entreprise, b=entreprise).ratio()
+            if ratio > 0.75 and ratio < 1:
+                entreprise_commune.append('- ' + candidacy.entreprise)
+        return entreprise_commune
+        
 
     @classmethod
     def get_all_in_list_with_user_name(cls):

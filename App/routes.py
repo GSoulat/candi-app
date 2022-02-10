@@ -1,9 +1,10 @@
 from collections import UserString
 from flask import render_template, redirect, url_for, flash, request
+
 from App import db, app, mail
-from datetime import date
+from datetime import date, datetime
 from .models import Users, Candidacy
-from .forms import Login, AddCandidacy, ModifyCandidacy, ModifyPassword, ModifyProfile, CheckEmail, CheckPwd
+from .forms import Login, AddCandidacy, ModifyCandidacy, ModifyPassword, ModifyProfile, CheckEmail, CheckPwd, AddCandidacy_verif
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_mail import Mail, Message
@@ -123,12 +124,35 @@ def add_candidature():
         [str]: [Candidacy code page]
     """
     form = AddCandidacy()
+
     if form.validate_on_submit():
-        Candidacy(user_id=current_user.id, status=form.status.data, entreprise=form.entreprise.data, ville_entreprise=form.ville_entreprise.data,
-                  contact_full_name=form.contact_full_name.data, contact_email=form.contact_email.data, contact_mobilephone=form.contact_mobilephone.data, date=form.date.data).save_to_db()
+        if form.entreprise.data.startswith('- ') == False:
+            print(form.entreprise.label.text)
+            entreprise_similaire = Candidacy.check_entreprise_exist(form.entreprise.data)
+
+            if entreprise_similaire != []:
+                entreprise_similaire.append('- ' + form.entreprise.data)
+                #entreprise_similaire.append('')
+                form = AddCandidacy_verif()
+                form.entreprise.choices = entreprise_similaire
+                flash('Merci de sélectionner l\'ortographe du nom de l\'entreprise', category='danger' )
+                return render_template('add_candidacy.html', form=form, Date_Today=date.today())
+
+        if form.entreprise.data.startswith('- '): form.entreprise.data = form.entreprise.data[2:]
+        Candidacy(user_id = current_user.id, 
+            status = form.status.data,
+            entreprise = form.entreprise.data,
+            ville_entreprise = form.ville_entreprise.data,
+            contact_full_name = form.contact_full_name.data,
+            contact_email = form.contact_email.data,
+            contact_mobilephone = form.contact_mobilephone.data,
+            date =form.date.data).save_to_db()
+
         flash('Nouvelle Candidature ajouté ', category='success')
         return redirect(url_for('board_page'))
-    return render_template('add_candidacy.html', form=form)
+    return render_template('add_candidacy.html', form=form, Date_Today=date.today())
+
+
 
 
 @app.route('/modify_password', methods=['GET', 'POST'])
