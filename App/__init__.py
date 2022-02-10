@@ -3,6 +3,9 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_mail import Mail
+import os
+from dotenv import load_dotenv
+load_dotenv(override=True)
 
 app = Flask(__name__)
 
@@ -13,9 +16,13 @@ login_manager = LoginManager(app)
 login_manager.login_view = "login_page"
 login_manager.login_message_category = "info"
 
+print(os.getenv("MAIL_USERNAME"))
+print(os.getenv("MAIL_PASSWORD"))
+# print(os.getenv("DATABASE_URL?sslmode=require").replace('postgres://','postgresql://',1))
+
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_USERNAME'] = "candy59.app@gmail.com"
-app.config['MAIL_PASSWORD'] = "@Azerty59&"
+app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
+app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_PORT'] = 465
