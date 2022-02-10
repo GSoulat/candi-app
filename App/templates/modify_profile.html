@@ -4,34 +4,51 @@
 Modify your profile
 {% endblock %}
 {% block content %}
-{% if current_user.is_admin %}
-    <p>Connecté en tant qu'administrateur</p>
-{% else %}
-    <p>Connecté en tant qu'utilisateur</p>
-{% endif %}
 <div class='container mt-5'>
-    <h1>Modify your profile</h1>
-    <br>
-    <form method="POST" class="form-register" >
-        {{ form.hidden_tag() }}
+    <div class="d-flex flex-column align-items-center">
+        <form method="POST" class="form-register m-0" >
 
-        {{ form.last_name.label() }}
-        {{ form.last_name(value=current_user.last_name, class="form-control") }}
-        <br/>
-        {{ form.first_name.label() }}
-        {{ form.first_name(value=current_user.first_name, class="form-control") }}
-        <br/>
-        {{ form.email_address.label() }}
-        {{ form.email_address(value=current_user.email_address, class="form-control") }}
-        <br/>
-        {{ form.telephone_number.label() }}
-        {% if current_user.telephone_number %}
-            {{ form.telephone_number(value=current_user.telephone_number, class="form-control") }}
-        {% else %}
-            {{ form.telephone_number(placeholder="Numéro de téléphone mobile", class="form-control") }}
-        {% endif %}
-        <br/>
-        {{ form.submit(class="btn btn-lg btn-primary d-block", id="button")}}
-    </form>
+            <div class="container"></div>
+                <div class = "row">
+                    <div class= "col-12">
+                        <h1 class="text-muted mt-0">Change your profile</h1>
+                    </div>
+                    {{ form.hidden_tag() }}
+                    {% if current_user.is_admin %}
+                    <div class="col-12 text-center">
+                        <img src="../static/logo_simplon.png" alt="image user" class="user-image-form"/>
+                    </div>
+                    {% else %}
+                    <div class="col-12 text-center">
+                        <img src="../static/user.png" alt="image user" class="user-image-form"/>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+                
+                <div class="input-group mb-3">
+                    <!-- <div>
+                    {{ form.last_name.label(class="mb-0 text-muted") }}
+                    </div> -->
+                    <span class="input-group-text block-inline bi-person"><i class="material-icons">&#xe7fd;</i></span>
+                    {{ form.last_name(value=current_user.last_name, class="form-control", placeholder="Name") }}
+                    {{ form.first_name(value=current_user.first_name, class="form-control ml-2", placeholder="FirstName") }}
+                </div>
+
+                <div class="input-group mb-3">
+                    <!-- {{ form.email_address.label(class="mb-0 text-muted") }} -->
+                    <span class="input-group-text block-inline" id="basic-addon1"><i class="material-icons">&#xe0be;</i></span>
+                    {{ form.email_address(value=current_user.email_address, class="form-control", placeholder="Email") }}
+                </div>
+                <div class="input-group mb-3">
+                    <!-- {{ form.telephone_number.label(class="mb-0 text-muted") }} -->
+                    <span class="input-group-text block-inline" id="basic-addon1"><i class="material-icons">&#xe0d4;</i></span>
+                    {{ form.telephone_number(value=current_user.telephone_number, class="form-control", placeholder="Cell phone number") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.submit(class="btn btn-lg bouton d-block", id="button")}}
+                </div>
+        </form>
+    </div>
 </div> 
 {% endblock %}
