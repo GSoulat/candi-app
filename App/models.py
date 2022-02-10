@@ -189,6 +189,13 @@ class Candidacy(db.Model):
             candidacy_list.append(candidacy)
         return candidacy_list
 
+    @classmethod
+    def get_all_in_list_entreprise(cls):
+        entreprise_list=[]
+        # for entreprise_info in cls.query.join(Users).with_entities(Users.first_name, Users.last_name, cls.user_id ,cls.entreprise,cls.entreprise_ville, cls.contact_full_name, cls.contact_email, cls.contact_mobilephone).all():
+        for entreprise_info in cls.query.join(Users).with_entities(cls.user_id ,cls.entreprise,cls.ville_entreprise, cls.contact_full_name, cls.contact_email, cls.contact_mobilephone).all():
+            entreprise_list.append(entreprise_info)
+        return entreprise_list
 
     def save_to_db(self):
         db.session.add(self)

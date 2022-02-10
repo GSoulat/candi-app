@@ -9,16 +9,14 @@
   <h1>Analyses statistiques des entreprise</h1>
 
   <div class="container">
-    <button type="button" class="btn btn-primary"><a href="{{ url_for('show_list_without_alternance') }}">Aprenants sans alternance</a></button>
-    <button type="button" class="btn btn-primary"><a href="{{ url_for('show_list_with_alternance') }}">Aprenants avec alternance</a></button>
+    <button type="button" class="btn btn-primary"><a href="{{ url_for('show_list_without_alternance') }}">Apprenants sans alternance</a></button>
+    <button type="button" class="btn btn-primary"><a href="{{ url_for('show_list_with_alternance') }}">Apprenants avec alternance</a></button>
     <button type="button" class="btn btn-primary"><a href="{{ url_for('show_histogram') }}">Statisques des Apprenants</a></button>
     <button type="button" class="btn btn-primary"><a href="{{ url_for('show_histogram_entreprise') }}">Statistiques des Entreprise</a></button>
   </div>
 
 
 </section>
-
-<h1>No. Candidature pour des Apprenants</h1>
 
 <section class="row col-10 bg-white mx-auto justify-content-center">
 <!doctype html>
@@ -45,8 +43,6 @@
 </html>
 </section>
 
-<h1>Another different title</h1>
-
 <section class="row col-10 bg-white mx-auto justify-content-center">
   <!doctype html>
   <html>
@@ -63,8 +59,8 @@
 <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 <div id="plotly-timeseries4">
 <script>
-    var graph2 = {{ plot_json2 | safe }};
-    Plotly.plot('plotly-timeseries4', graph2, {});
+    var graph4 = {{ plot_json4 | safe }};
+    Plotly.plot('plotly-timeseries4', graph4, {});
 
 </script>
 </div>

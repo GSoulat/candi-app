@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
 {% block title %}
-Board
+    
 {% endblock %}
 
 {% block content %}
 <section>
-  <h1>Progress of {{user_name}}</h1>
+  <h1>Coordonées des Entreprises</h1>
 
   <div class="container">
     <button type="button" class="btn btn-primary"><a href="{{ url_for('show_list_without_alternance') }}">Apprenants sans alternance</a></button>
@@ -15,7 +15,6 @@ Board
     <button type="button" class="btn btn-primary"><a href="{{ url_for('show_histogram_entreprise') }}">Statistiques des Entreprise</a></button>
   </div>
 
-
   <div class="tbl-header">
     <table cellpadding="0" cellspacing="0" border="0">
       <thead>
@@ -23,7 +22,10 @@ Board
           {% for col_name in title %}
           <th style="text-align:left">{{ col_name }}</th>
 
-          {% endfor %}  
+          {% endfor %}
+          {% if current_user.is_admin == False %}
+          <th style="text-align:left"> action  </th>
+          {% endif %}
         </tr>
       </thead>
     </table>
@@ -38,10 +40,11 @@ Board
               <td>{{ candidacy[info] }}</td>
             {% endif %}
           {% endfor %}
-        </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </section>
+
+
 {% endblock %}
