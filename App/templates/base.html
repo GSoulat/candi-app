@@ -23,17 +23,17 @@
   <nav class="navbar navbar-expand-sm">
     <div class="container-fluid">
 
-      <div class = "col-2 my-0">
+      <div class = "col-md-2 my-0">
         <div class="row">
-          <div class="col-1">
+          <div class="col-md-1">
             <a class="navbar-brand text-center my-0" href="https://simplon.co/">
               <img src="../static/logo_simplon.png" alt="logo Simplon" class="logo" /><br/>
             <p class="h6 my-0">Candi-app</p>
           </div>
-          <div class="col-1">
+          <div class="col-md-1">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
-              <span class="navbar-toggler-icon"></span>
+              <span class="navbar-toggler-icon">Menu</span>
             </button>
           </div>
         </div>
@@ -54,13 +54,6 @@
               <li class="nav-item ml-3">
                 <a class="nav-link item" href="{{ url_for('profile_page') }}"><i class="material-icons">person</i><br/>Profile</a>
               </li>
-            {% else %}
-            <li class="nav-item ml-3">
-              <a class="nav-link" href="{{ url_for('login_page') }}">Board</a>
-            </li>
-            <li class="nav-item ml-3">
-              <a class="nav-link item" href="{{ url_for('login_page') }}">Stats</a>
-            </li>
             {% endif %}
           </ul>
         </div>
@@ -68,10 +61,6 @@
         <div class="col-md-3 my-0">
             {% if current_user.is_authenticated %}
           <ul class="navbar-nav nav-pills justify-content-end">
-            <li class="nav-item">
-              <!-- {{ current_user.first_name }} {{ current_user.last_name }} -->
-              <a  class="nav-link item" href="{{ url_for('modify_password') }}"> Change password </a>
-            </li>
             <li class="nav-item ml-3">
               <a class="nav-link item" href="{{ url_for('logout_page') }}">Log out</a>
             </li>
