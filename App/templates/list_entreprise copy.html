@@ -16,26 +16,33 @@
   </div>
 
   <div class="tbl-header">
-    <table cellpadding="0" cellspacing="0" border="0" class="table" data-toggle="table" data-search="true">
+    <table cellpadding="0" cellspacing="0" border="0">
       <thead>
         <tr>
           {% for col_name in title %}
-          <th style="text-align:left" data-sortable="true">{{ col_name }}</th>
+          <th style="text-align:left">{{ col_name }}</th>
+
           {% endfor %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for candidacy in user_candidacy%}
-          <tr>
-            {% for info in candidacy.keys()%}
-              {% if info not in ['id','user_id'] %}
-                <td data-sortable="true">{{ candidacy[info] }}</td>
-              {% endif %}
-            {% endfor %}
-          </tr>
+          {% if current_user.is_admin == False %}
+          <th style="text-align:left"> action  </th>
+          {% endif %}
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div class="tbl-content">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <tbody>
+        {% for candidacy in user_candidacy%}
+        <tr>
+          {% for info in candidacy.keys()%}
+            {% if info not in ['id','user_id'] %}
+              <td>{{ candidacy[info] }}</td>
+            {% endif %}
           {% endfor %}
-        </tbody>
-      </table>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 </section>
 
