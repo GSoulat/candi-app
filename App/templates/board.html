@@ -10,8 +10,8 @@ Board
 
   {% if current_user.is_admin == True %}
   <div class="container">
-    <button type="button" class="btn btn-primary"><a href="{{ url_for('show_list_without_alternance') }}">Analyses statistiques</a></button>
-    <button type="button" class="btn btn-primary"><a href="{{ url_for('list_entreprise_page') }}">Coordonnées des Entreprises</a></button>
+    <button type="button" class="btn bouton" role="button"><a href="{{ url_for('show_list_without_alternance') }}">Analyses statistiques</a></button>
+    <button type="button" class="btn bouton" role="button"><a href="{{ url_for('list_entreprise_page') }}">Coordonnées des Entreprises</a></button>
 </div>
 
 {% endif %}
