@@ -26,7 +26,7 @@ class AddCandidacy(FlaskForm):
     contact_email = EmailField(label='Email du contact', validators=[Length(max=50)])
     contact_mobilephone = StringField(label='Téléphone du contact',validators=[Length(max=20)])
     comment = TextAreaField(label='Commentaire',validators=[Length(max=500)])
-    status = SelectField(label='Statut',choices=['En cours','Rejeté','Accepté','C\'est compliqué'], validators=[DataRequired()])
+    status = SelectField(label='Statut',choices=['En cours','Rejeté','Alternance','C\'est compliqué'], validators=[DataRequired()])
     date = DateField(label='Date de la candidature',validators=[DataRequired()],format='%Y-%m-%d')
     print("En cours d'ajout")
     submit = SubmitField(label='Ajouter')
@@ -41,7 +41,7 @@ class AddCandidacy_verif(FlaskForm):
     contact_email = EmailField(label='Email du contact', validators=[Length(max=50)])
     contact_mobilephone = StringField(label='Téléphone du contact',validators=[Length(max=20)])
     comment = TextAreaField(label='Commentaire',validators=[Length(max=500)])
-    status = SelectField(label='Statut',choices=['En cours','Rejeté','Accepté','C\'est compliqué'], validators=[DataRequired()])
+    status = SelectField(label='Statut',choices=['En cours','Rejeté','Alternance','C\'est compliqué'], validators=[DataRequired()])
     date = DateField(label='Date de la candidature',validators=[DataRequired()],format='%Y-%m-%d')
     print("En cours d'ajout")
     submit = SubmitField(label='Ajouter')
@@ -73,7 +73,7 @@ class ModifyCandidacy(FlaskForm):
         label='Email du contact', validators=[DataRequired(),Length(max=50)])
     contact_mobilephone = StringField(label='Téléphone du contact', validators=[DataRequired(),Length(max=50)])
     status = SelectField(label='Statut', choices=[
-                         'En cours', 'Rejeté', 'Accepté', 'C\'est compliqué'], validators=[DataRequired()])
+                         'En cours', 'Rejeté', 'Alternance', 'C\'est compliqué'], validators=[DataRequired()])
     comment = TextAreaField(label='Commentaire',validators=[Length(max=500)])
     date = DateField(label='Date de la candidature', validators=[
                      DataRequired()], format='%Y-%m-%d')
