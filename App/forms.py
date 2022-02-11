@@ -88,7 +88,7 @@ class ModifyProfile(FlaskForm):
     first_name = StringField(label="Prénom", validators=[DataRequired(), Length(max=50)])
     email_address = EmailField(label="Adresse mail:", validators=[DataRequired()])
     # street_number = StringField(label="Adresse mail:", validators = [DataRequired(), NumberRange(), Length(max=5)])
-    telephone_number = StringField(label='Numéro de mobile :', validators=[Length(min=10, max=10)])
+    telephone_number = StringField(label='Numéro de mobile :', validators=[Length(max=14)])
 
     submit = SubmitField(label="Valider")
 

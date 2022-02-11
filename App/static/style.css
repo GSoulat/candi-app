@@ -41,6 +41,12 @@ nav {
   text-align: center;
 }
 
+.nav-item > .nav-link.active {
+  text-align: center;
+  background-color: white;
+  color: black;
+}
+
 .item:hover {
   background-color: white;
   color: black;

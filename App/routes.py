@@ -19,7 +19,7 @@ import string
 
 
 @app.route('/')
-@app.route('/home')
+@app.route('/home/')
 def home_page():
     """[Allow to generate the template of home.html on home path]
 
@@ -29,7 +29,7 @@ def home_page():
     return render_template('home.html')
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login/', methods=['GET', 'POST'])
 def login_page():
     """[Allow to ask login and generate the template of login.html on login path]
 
@@ -48,7 +48,7 @@ def login_page():
             flash('Adresse email ou mot de passe invalide', category="danger")
     return render_template('login.html', form=form)
 
-@app.route('/board', methods=['GET', 'POST'])
+@app.route('/board/', methods=['GET', 'POST'])
 @login_required
 def board_page():
     """[Allow to generate the template of board.html on board path, if user is authenticated else return on login]
@@ -93,7 +93,7 @@ def modify_profile_page():
     return render_template('modify_profile.html', form=form, current_user=current_user)
 
 
-@app.route('/stat')
+@app.route('/stat/')
 @login_required
 def stat_page():
     df = pd.DataFrame(Candidacy.query.join(Users).with_entities(Users.first_name,Users.last_name,Users.email_address,Candidacy.status, Candidacy.entreprise).all(),columns=["first_name","last_name","mail","status","enterprise"])
@@ -107,7 +107,7 @@ def stat_page():
     return render_template('stat.html',graph1=graphJSON1, graph2=graphJSON2)
 
 
-@app.route('/logout')
+@app.route('/logout/')
 def logout_page():
     """[Allows to disconnect the user and redirect to the home page]
     """
@@ -116,7 +116,7 @@ def logout_page():
     return redirect(url_for('home_page'))
 
 
-@app.route('/candidature', methods=['GET', 'POST'])
+@app.route('/candidature/', methods=['GET', 'POST'])
 def add_candidature():
     """[Allow to generate the template of add_candidacy.html on candidacy path to add candidacy in the BDD if validate and redirect to the board page when finish]
 
@@ -155,7 +155,7 @@ def add_candidature():
 
 
 
-@app.route('/modify_password', methods=['GET', 'POST'])
+@app.route('/modify_password/', methods=['GET', 'POST'])
 @login_required
 def modify_password():
     """[Allow to generate the template of modify_password.html on modify_password path to modify password in the BDD if validate and redirect to the board page when finish]
@@ -178,7 +178,7 @@ def modify_password():
     return render_template('modify_password.html', form=form)
 
 
-@app.route('/modify_candidacy', methods=['GET', 'POST'])
+@app.route('/modify_candidacy/', methods=['GET', 'POST'])
 @login_required
 def modify_candidacy():
     """[Allow to generate the template of modify_candidacy.html on modify_candidacy path to modify candidacy in the BDD if validate and redirect to the board page when finish]
@@ -211,7 +211,7 @@ def modify_candidacy():
     return render_template('modify_candidacy.html', form=form, candidacy=candidacy.json())
 
 
-@app.route('/delete_candidacy', methods=['GET', 'POST'])
+@app.route('/delete_candidacy/', methods=['GET', 'POST'])
 def delete_candidacy():
     """[Allow to delete candidacy in the BDD with the id and redirect to board page]"""
 
@@ -222,7 +222,7 @@ def delete_candidacy():
     return redirect(url_for('board_page'))
 
 
-@app.route('/list_with_alternance', methods=['GET', 'POST'])
+@app.route('/list_with_alternance/', methods=['GET', 'POST'])
 def show_list_with_alternance():
     """[Allow to generate the template of list_with_alternance.html to display the list of students that have found an alternance]
 
@@ -234,7 +234,7 @@ def show_list_with_alternance():
     return render_template('list_with_alternance.html', lenght=len(attributs), title=attributs, user_candidacy=Users.get_list_with_alternance())
 
 
-@app.route('/list_without_alternance', methods=['GET', 'POST'])
+@app.route('/list_without_alternance/', methods=['GET', 'POST'])
 def show_list_without_alternance():
     """[Allow to generate the template of list_with_alternance.html to display the list of students that have yet found an alternance]
 
@@ -260,7 +260,7 @@ def disp_histogram_plot(df_to_disp):
     return plot_json
 
 
-@app.route('/show_histogram')
+@app.route('/show_histogram/')
 def show_histogram():
     """[Allow to generate the template of statistic_hist.html to display histogram of the status of the apprenants]
 
@@ -304,7 +304,7 @@ def disp_pie_plot(df_to_disp):
     return plot_json
 
 
-@app.route('/show_pie_chart')
+@app.route('/show_pie_chart/')
 def show_pie_chart():
     """[Allow to generate the template of statistic_pie.html to display different statistif figures]
 
@@ -343,7 +343,7 @@ def show_pie_chart():
     return render_template('statistic_pie.html', **kwargs)
 
 
-@app.route('/user_board', methods=['GET', 'POST'])
+@app.route('/user_board/', methods=['GET', 'POST'])
 @login_required
 def user_board_page():
     """[Allow to generate the template of board.html on board path, if user is authenticated else return on login]
@@ -365,7 +365,7 @@ def user_board_page():
     return render_template('user_board.html', lenght=len(usercandidacy_attributs), user_name=user_name, title=usercandidacy_attributs, user_candidacy=Candidacy.find_by_user_id(id))
 
 
-@app.route('/checkemail',methods=["POST","GET"])
+@app.route('/checkemail/',methods=["POST","GET"])
 def check_email_page():
     form = CheckEmail()
     check = Users.query.filter_by(email_address=form.email.data).first()
@@ -383,7 +383,7 @@ def check_email_page():
     return render_template('check_email.html', form=form)
 
 
-@app.route("/new_password/<string:hashCode>",methods=["GET","POST"])
+@app.route("/new_password/<string:hashCode>/",methods=["GET","POST"])
 def hashcode(hashCode):
     form = CheckPwd()
     check = Users.query.filter_by(hashCode=hashCode).first() 
