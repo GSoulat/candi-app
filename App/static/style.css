@@ -116,6 +116,8 @@ th {
   font-size: 12px;
   color: black;
   text-transform: uppercase;
+  background-color: grey;
+
 }
 
 .infos {
@@ -131,16 +133,16 @@ th {
   line-height: 30px;
 }
 .alternance {
-  background-color: rgba(15, 124, 5, 0.767);
+  background-color: #27eb72;
 }
 .en_cours {
   background-color: rgba(53, 104, 61, 0.575);
 }
 .rejete {
-  background-color: rgba(143, 6, 6, 0.671);
+  background-color: #ff686b;
 }
 .complique {
-  background-color: rgba(56, 64, 180, 0.534);
+  background-color: #90bede;
 }
 
 .button {

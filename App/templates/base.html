@@ -48,9 +48,16 @@
             <li class="nav-item ml-3">
               <a class="nav-link item" href="{{ url_for('board_page') }}"><i class="material-icons">dashboard</i><br/>Board</a>
             </li>
+            {% if current_user.is_admin == True %}
             <li class="nav-item ml-3">
-              <a class="nav-link item" href="{{ url_for('stat_page') }}"><i class="material-icons">equalizer</i><br/>Stats</a>
+              <a class="nav-link item" href="{{ url_for('show_list_without_alternance') }}"><i class="material-icons">equalizer</i><br/>Stats</a>
             </li>
+            {% endif %}
+            {% if current_user.is_admin == False %}
+            <li class="nav-item ml-3">
+              <a class="nav-link item" href="" ><i class="material-icons">equalizer</i><br/>Stats</a>
+            </li>
+            {% endif %}
               <li class="nav-item ml-3">
                 <a class="nav-link item" href="{{ url_for('profile_page') }}"><i class="material-icons">person</i><br/>Profile</a>
               </li>

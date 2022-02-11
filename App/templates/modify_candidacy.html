@@ -21,8 +21,6 @@
                     {{ form.ville_entreprise(value=candidacy.ville_entreprise, size=32, class="form-control",placeholder="C'est où Poudlard en vrai ?") }}
                 </div>
             </div>
-
-
             <br>
             {{ form.contact_full_name.label() }}
             {{ form.contact_full_name(value=candidacy.contact_full_name, class="form-control",placeholder="Mr Albus dumbledor") }}
@@ -48,7 +46,7 @@
             </div>
             <br>
             <br>
-            {{ form.submit(class="btn btn-lg bouton", id="button")}}
+            {{ form.submit(class="btn btn-lg btn-primary d-block", id="button")}}
         </form>
     </div>  
 {% endblock %}
