@@ -21,11 +21,11 @@ Profil
         </div>
         {% if current_user.is_admin %}
         <div class="col-12 text-center">
-            <img src="../static/logo_simplon.png" alt="image user" class="user-image"/>
+            <img src="{{ current_user.filename }}" alt="image user" class="user-image"/>
         </div>
         {% else %}
         <div class="col-12 text-center">
-            <img src="../static/user.png" alt="image user" class="user-image"/>
+            <img src="{{ current_user.filename }}" alt="image user" class="user-image"/>
         </div>
         {% endif %}
     </div>
