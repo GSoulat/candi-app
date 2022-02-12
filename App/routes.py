@@ -16,7 +16,7 @@ import json as js
 import pandas as pd
 import random
 import string
-
+# from werkzeug import secure_filename
 
 @app.route('/')
 @app.route('/home')
@@ -84,6 +84,11 @@ def modify_profile_page():
         current_user.first_name = form.first_name.data
         current_user.email_address = form.email_address.data
         current_user.telephone_number = form.telephone_number.data
+        # current_user.filename = form.file.data.filename
+        # current_user.data = form.file.data
+        # current_user.filename.save(secure_filename(current_user.filename.filename))
+        # print(form.file.data.filename)
+        # print(form.file.data)
         db.session.add(current_user)
         db.session.commit()
         flash(f"Votre profil a été modifié avec succès.", category="success")

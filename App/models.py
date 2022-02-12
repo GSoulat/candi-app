@@ -37,7 +37,8 @@ class Users(db.Model, UserMixin):
     telephone_number = db.Column(db.String(length=10), nullable=True)
     hashCode = db.Column(db.String(120))
     is_admin = db.Column(db.Boolean(), nullable=False, default=False)
-    
+    filename = db.Column(db.String(length=50))
+    data = db.Column(db.LargeBinary())
 
     def __repr__(self):
         return f'{self.last_name} {self.first_name}'
