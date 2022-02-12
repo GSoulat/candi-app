@@ -23,17 +23,17 @@
   <nav class="navbar navbar-expand-sm">
     <div class="container-fluid">
 
-      <div class = "col-2 my-0">
+      <div class = "col-md-2 my-0">
         <div class="row">
-          <div class="col-1">
+          <div class="col-md-1">
             <a class="navbar-brand text-center my-0" href="https://simplon.co/">
               <img src="../static/logo_simplon.png" alt="logo Simplon" class="logo" /><br/>
             <p class="h6 my-0">Candi-app</p>
           </div>
-          <div class="col-1">
+          <div class="col-md-1">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
-              <span class="navbar-toggler-icon"></span>
+              <span class="navbar-toggler-icon">Menu</span>
             </button>
           </div>
         </div>
@@ -42,35 +42,31 @@
         <div class="col-md-7 my-0 navbar-collapse collapse" id="navbar">
           <ul class="navbar-nav nav nav-pills">
             <li class="nav-item">
-              <a class="nav-link bg-white text-dark item active" aria-current="page" href="{{ url_for('home_page') }}"><i class="material-icons">home</i><br/>Home</a>
+              <a class="nav-link item" aria-current="page" href="{{ url_for('home_page') }}"><i class="material-icons">home</i><br/>Home</a>
             </li>
           {% if current_user.is_authenticated %}
             <li class="nav-item ml-3">
               <a class="nav-link item" href="{{ url_for('board_page') }}"><i class="material-icons">dashboard</i><br/>Board</a>
             </li>
+            {% if current_user.is_admin == True %}
             <li class="nav-item ml-3">
-              <a class="nav-link item" href="{{ url_for('stat_page') }}"><i class="material-icons">equalizer</i><br/>Stats</a>
-            </li>
-              <li class="nav-item ml-3">
-                <a class="nav-link item" href="{{ url_for('profile_page') }}"><i class="material-icons">person</i><br/>Profile</a>
-              </li>
-            {% else %}
-            <li class="nav-item ml-3">
-              <a class="nav-link" href="{{ url_for('login_page') }}">Board</a>
-            </li>
-            <li class="nav-item ml-3">
-              <a class="nav-link item" href="{{ url_for('login_page') }}">Stats</a>
+              <a class="nav-link item" href="{{ url_for('show_list_without_alternance') }}"><i class="material-icons">equalizer</i><br/>Stats</a>
             </li>
             {% endif %}
+            {% if current_user.is_admin == False %}
+            <li class="nav-item ml-3">
+              <a class="nav-link item" href="" ><i class="material-icons">equalizer</i><br/>Stats</a>
+            </li>
+            {% endif %}
+          {% endif %}
           </ul>
         </div>
 
         <div class="col-md-3 my-0">
             {% if current_user.is_authenticated %}
           <ul class="navbar-nav nav-pills justify-content-end">
-            <li class="nav-item">
-              <!-- {{ current_user.first_name }} {{ current_user.last_name }} -->
-              <a  class="nav-link item" href="{{ url_for('modify_password') }}"> Change password </a>
+            <li class="nav-item ml-3">
+              <a class="nav-link item" href="{{ url_for('profile_page') }}">Welcome, {{ current_user.first_name }} {{ current_user.last_name }}</a>
             </li>
             <li class="nav-item ml-3">
               <a class="nav-link item" name="logout" href="{{ url_for('logout_page') }}">Log out</a>

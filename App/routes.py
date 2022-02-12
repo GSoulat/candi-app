@@ -56,10 +56,10 @@ def board_page():
     Returns:
         [str]: [board page code different if the user is admin or not]
     """
-    admin_candidacy_attributs = ["user_fisrt_name", 'entreprise',
-                                 'contact_full_name', 'contact_email', 'contact_mobilephone', 'date', 'status']
-    usercandidacy_attributs = ['entreprise', 'ville entreprise', 'contact_full_name',
-                               'contact_email', 'contact_mobilephone', 'date', 'status', 'comment']
+    admin_candidacy_attributs = ["Nom", 'entreprise',
+                                 'Nom du contact', 'Email du contact', 'Telephone du contact', 'date', 'statut']
+    usercandidacy_attributs = ['Entreprise', 'Ville entreprise', 'Nom du contact',
+                               'Email du contact', 'Telephone du contact', 'date', 'statut', 'commentaire']
 
     if (current_user.is_admin == True):
         return render_template('board.html', lenght=len(admin_candidacy_attributs), title=admin_candidacy_attributs, user_candidacy=Candidacy.get_all_in_list_with_user_name())
@@ -132,7 +132,6 @@ def add_candidature():
 
     if form.validate_on_submit():
         if form.entreprise.data.startswith('- ') == False:
-            print(form.entreprise.label.text)
             entreprise_similaire = Candidacy.check_entreprise_exist(form.entreprise.data)
 
             if entreprise_similaire != []:
@@ -146,6 +145,7 @@ def add_candidature():
         if form.entreprise.data.startswith('- '): form.entreprise.data = form.entreprise.data[2:]
         Candidacy(user_id = current_user.id, 
             status = form.status.data,
+            comment = form.comment.data,
             entreprise = form.entreprise.data,
             ville_entreprise = form.ville_entreprise.data,
             contact_full_name = form.contact_full_name.data,
@@ -194,7 +194,6 @@ def modify_candidacy():
     form = ModifyCandidacy()
     candidacy_id = request.args.get('id')
     candidacy = Candidacy.query.filter_by(id=candidacy_id).first()
-    print(candidacy.json())
     if form.validate_on_submit():
 
         if candidacy:
@@ -213,6 +212,7 @@ def modify_candidacy():
         else:
             flash('Something goes wrong', category="danger")
     form.comment.data = candidacy.comment
+    print(candidacy.json())
     return render_template('modify_candidacy.html', form=form, candidacy=candidacy.json())
 
 
@@ -442,10 +442,9 @@ def check_email_page():
             check.hashCode = hashCode
             db.session.commit()
             msg = Message('Confirm Password Change', sender = 'candy59.app@gmail.com', recipients = [form.email.data])
-            
-            msg.body = "Hello,\nWe've received a request to reset your password. If you want to reset your password, click the link below and enter your new password\n http://localhost:5000/new_password/" + check.hashCode
-            print(msg)
+            msg.body = "Hello,\nWe've received a request to reset your password. If you want to reset your password, click the link below and enter your new password\n https://candi-app1.herokuapp.com/new_password/" + check.hashCode
             mail.send(msg)
+            flash('Si l\'adresse Email est associé à un compte, un message vous a été envoyé pour reset votre password', category='warning' )
             return redirect(url_for('login_page'))
     return render_template('check_email.html', form=form)
 

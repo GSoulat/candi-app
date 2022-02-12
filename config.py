@@ -5,8 +5,6 @@ load_dotenv(override=True)
 
 
 # Database initialization
-
-
 SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL").replace('postgres://','postgresql://')
 
 
