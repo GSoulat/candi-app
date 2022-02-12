@@ -1,10 +1,10 @@
 from logging import PlaceHolder
 from flask_wtf import FlaskForm
 
-from wtforms import PasswordField, EmailField, SubmitField, StringField, TextAreaField
+from wtforms import PasswordField, EmailField, SubmitField, StringField, TextAreaField, FileField
 from wtforms.fields import DateField, SelectField
 from wtforms.validators import Length, DataRequired, Email, EqualTo, ValidationError
-
+from flask_wtf.file import FileField, FileAllowed
 from .models import Users
 
 
@@ -89,7 +89,7 @@ class ModifyProfile(FlaskForm):
     email_address = EmailField(label="Adresse mail:", validators=[DataRequired()])
     # street_number = StringField(label="Adresse mail:", validators = [DataRequired(), NumberRange(), Length(max=5)])
     telephone_number = StringField(label='Numéro de mobile :', validators=[Length(min=10, max=10)])
-
+    file = FileField('file', validators=[FileAllowed(['jpg', 'png'], 'Images only!')])
     submit = SubmitField(label="Valider")
 
 

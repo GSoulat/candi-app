@@ -73,13 +73,13 @@
               <a  class="nav-link item" href="{{ url_for('modify_password') }}"> Change password </a>
             </li>
             <li class="nav-item ml-3">
-              <a class="nav-link item" href="{{ url_for('logout_page') }}">Log out</a>
+              <a class="nav-link item" name="logout" href="{{ url_for('logout_page') }}">Log out</a>
             </li>
           </ul>
             {% else %}
           <ul  class="navbar-nav justify-content-end">
             <li class="nav-item ml-3">
-              <a class="nav-link" href="{{ url_for('login_page') }}">Log in</a>
+              <a class="nav-link" name="login" href="{{ url_for('login_page') }}">Log in</a>
             </li>
           </ul>
           {% endif %}
@@ -90,7 +90,7 @@
   {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
   {% for category,message in messages %}
-  <div class="alert alert-{{ category }} alter-dismissable fade show" role="alert">
+  <div class="alert alert-{{ category }} alter-dismissable fade show" role="alert" id="alert">
     {{ message }}
     <button type="button" class="close" data-dismiss="alert">
       <span aria-hidden="true">&times;</span>

@@ -6,7 +6,7 @@ Modify your profile
 {% block content %}
 <div class='container mt-5'>
     <div class="d-flex flex-column align-items-center">
-        <form method="POST" class="form-register m-0" >
+        <form method="POST" class="form-register m-0" enctype = "multipart/form-data">
 
             <div class="container"></div>
                 <div class = "row">
@@ -45,6 +45,8 @@ Modify your profile
                     <span class="input-group-text block-inline" id="basic-addon1"><i class="material-icons">&#xe0d4;</i></span>
                     {{ form.telephone_number(value=current_user.telephone_number, class="form-control", placeholder="Cell phone number") }}
                 </div>
+                
+                {{ form.file }}
                 <div class="mb-3">
                     {{ form.submit(class="btn btn-lg bouton d-block", id="button")}}
                 </div>
