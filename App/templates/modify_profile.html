@@ -16,11 +16,11 @@ Modify your profile
                     {{ form.hidden_tag() }}
                     {% if current_user.is_admin %}
                     <div class="col-12 text-center">
-                        <img src="../static/logo_simplon.png" alt="image user" class="user-image-form"/>
+                        <img src="{{ current_user.filename }}" alt="image user" class="user-image-form"/>
                     </div>
                     {% else %}
                     <div class="col-12 text-center">
-                        <img src="../static/user.png" alt="image user" class="user-image-form"/>
+                        <img src="{{ current_user.filename }}" alt="image user" class="user-image-form"/>
                     </div>
                     {% endif %}
                 </div>
@@ -46,7 +46,10 @@ Modify your profile
                     {{ form.telephone_number(value=current_user.telephone_number, class="form-control", placeholder="Cell phone number") }}
                 </div>
                 
-                {{ form.file }}
+                <div class="form-group">
+                    <label for="profil">Photo de profil </label>
+                    <input type="file" class="form-control" id="profil" name="profil">
+                </div>
                 <div class="mb-3">
                     {{ form.submit(class="btn btn-lg bouton d-block", id="button")}}
                 </div>

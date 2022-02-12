@@ -16,6 +16,8 @@ import json as js
 import pandas as pd
 import random
 import string
+import cloudinary.uploader
+
 # from werkzeug import secure_filename
 
 @app.route('/')
@@ -84,11 +86,15 @@ def modify_profile_page():
         current_user.first_name = form.first_name.data
         current_user.email_address = form.email_address.data
         current_user.telephone_number = form.telephone_number.data
-        # current_user.filename = form.file.data.filename
-        # current_user.data = form.file.data
-        # current_user.filename.save(secure_filename(current_user.filename.filename))
-        # print(form.file.data.filename)
-        # print(form.file.data)
+        current_user.filename = None
+        
+        file_to_upload = request.files.get('profil')
+        if file_to_upload:
+            print('file to upload')
+            upload_result = cloudinary.uploader.upload(file_to_upload)
+            app.logger.info(upload_result)
+            current_user.filename = upload_result['secure_url']
+
         db.session.add(current_user)
         db.session.commit()
         flash(f"Votre profil a été modifié avec succès.", category="success")
