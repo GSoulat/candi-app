@@ -20,12 +20,13 @@ class Login(FlaskForm):
 class AddCandidacy(FlaskForm):
     """[Form to add candidacy]
     """
-    entreprise = StringField(label='Entreprise', validators=[DataRequired()])
-    ville_entreprise = StringField(label='Ville de l\'entreprise', validators=[DataRequired()])
-    contact_full_name = StringField(label='Nom du contact', validators=[DataRequired()])
-    contact_email = StringField(label='Email du contact', validators=[DataRequired()])
-    contact_mobilephone = StringField(label='Téléphone du contact')
-    status = SelectField(label='Statut',choices=['En cours','Rejeté','Accepté','C\'est compliqué'], validators=[DataRequired()])
+    entreprise = StringField(label='Entreprise', validators=[DataRequired(),Length(max=50)])
+    ville_entreprise = StringField(label='Ville de l\'entreprise', validators=[DataRequired(),Length(max=50)])
+    contact_full_name = StringField(label='Nom du contact', validators=[DataRequired(),Length(max=50)])
+    contact_email = EmailField(label='Email du contact', validators=[Length(max=50)])
+    contact_mobilephone = StringField(label='Téléphone du contact',validators=[Length(max=20)])
+    comment = TextAreaField(label='Commentaire',validators=[Length(max=500)])
+    status = SelectField(label='Statut',choices=['En cours','Rejeté','Alternance','C\'est compliqué'], validators=[DataRequired()])
     date = DateField(label='Date de la candidature',validators=[DataRequired()],format='%Y-%m-%d')
     print("En cours d'ajout")
     submit = SubmitField(label='Ajouter')
@@ -34,15 +35,14 @@ class AddCandidacy(FlaskForm):
 class AddCandidacy_verif(FlaskForm):
     """[Form to add candidacy]
     """
-    entreprise = SelectField(label='Liste des entreprises', validators=[DataRequired()])
-    ville_entreprise = StringField(label='Ville de l\'entreprise', validators=[DataRequired()])
-    contact_full_name = StringField(label='Nom du contact', validators=[DataRequired()])
-    contact_email = StringField(label='Email du contact', validators=[DataRequired()])
-    contact_mobilephone = StringField(label='Téléphone du contact')
-    status = SelectField(label='Statut', choices=[
-                         'En cours', 'Rejeté', 'Accepté', 'C\'est compliqué'], validators=[DataRequired()])
-    date = DateField(label='Date de la candidature', validators=[
-                     DataRequired()], format='%Y-%m-%d')
+    entreprise = SelectField(label='Liste des entreprises', validators=[DataRequired(),Length(max=50)])
+    ville_entreprise = StringField(label='Ville de l\'entreprise', validators=[DataRequired(),Length(max=50)])
+    contact_full_name = StringField(label='Nom du contact', validators=[DataRequired(),Length(max=50)])
+    contact_email = EmailField(label='Email du contact', validators=[Length(max=50)])
+    contact_mobilephone = StringField(label='Téléphone du contact',validators=[Length(max=20)])
+    comment = TextAreaField(label='Commentaire',validators=[Length(max=500)])
+    status = SelectField(label='Statut',choices=['En cours','Rejeté','Alternance','C\'est compliqué'], validators=[DataRequired()])
+    date = DateField(label='Date de la candidature',validators=[DataRequired()],format='%Y-%m-%d')
     print("En cours d'ajout")
     submit = SubmitField(label='Ajouter')
 
@@ -64,17 +64,17 @@ class ModifyCandidacy(FlaskForm):
     """[form to modify candidacy]
     """
 
-    entreprise = StringField(label='Entreprise', validators=[DataRequired()])
+    entreprise = StringField(label='Entreprise', validators=[DataRequired(),Length(max=50)])
     ville_entreprise = StringField(
-        label='Ville de l\'entreprise', validators=[DataRequired()])
+        label='Ville de l\'entreprise', validators=[DataRequired(),Length(max=50)])
     contact_full_name = StringField(
-        label='Nom du contact', validators=[DataRequired()])
+        label='Nom du contact', validators=[DataRequired(),Length(max=50)])
     contact_email = StringField(
-        label='Email du contact', validators=[DataRequired()])
-    contact_mobilephone = StringField(label='Téléphone du contact')
+        label='Email du contact', validators=[DataRequired(),Length(max=50)])
+    contact_mobilephone = StringField(label='Téléphone du contact', validators=[DataRequired(),Length(max=50)])
     status = SelectField(label='Statut', choices=[
-                         'En cours', 'Rejeté', 'Accepté', 'C\'est compliqué'], validators=[DataRequired()])
-    comment = TextAreaField(label='Commentaire')
+                         'En cours', 'Rejeté', 'Alternance', 'C\'est compliqué'], validators=[DataRequired()])
+    comment = TextAreaField(label='Commentaire',validators=[Length(max=500)])
     date = DateField(label='Date de la candidature', validators=[
                      DataRequired()], format='%Y-%m-%d')
 
@@ -88,7 +88,7 @@ class ModifyProfile(FlaskForm):
     first_name = StringField(label="Prénom", validators=[DataRequired(), Length(max=50)])
     email_address = EmailField(label="Adresse mail:", validators=[DataRequired()])
     # street_number = StringField(label="Adresse mail:", validators = [DataRequired(), NumberRange(), Length(max=5)])
-    telephone_number = StringField(label='Numéro de mobile :', validators=[Length(min=10, max=10)])
+    telephone_number = StringField(label='Numéro de mobile :', validators=[Length(max=14)])
     file = FileField('file', validators=[FileAllowed(['jpg', 'png'], 'Images only!')])
     submit = SubmitField(label="Valider")
 

@@ -41,6 +41,12 @@ nav {
   text-align: center;
 }
 
+.nav-item > .nav-link.active {
+  text-align: center;
+  background-color: white;
+  color: black;
+}
+
 .item:hover {
   background-color: white;
   color: black;
@@ -52,9 +58,13 @@ h1 {
   font-weight: 300;
   text-align: center;
   margin-bottom: 15px;
-  border-radius: 5px 5px 0 0;
+  border-radius: 20px 20px 20px 20px;
   line-height: 50px;
-  background-color: red;
+  background-color: #F0F0F0;
+  border-color:rgba(2, 2, 2, 0.767);
+  border-style: groove;
+  width: 100%;
+  
 }
 
 section h2 {
@@ -106,6 +116,8 @@ th {
   font-size: 12px;
   color: black;
   text-transform: uppercase;
+  background-color: grey;
+
 }
 
 .infos {
@@ -121,16 +133,16 @@ th {
   line-height: 30px;
 }
 .alternance {
-  background-color: rgba(15, 124, 5, 0.767);
+  background-color: #27eb72;
 }
 .en_cours {
   background-color: rgba(53, 104, 61, 0.575);
 }
 .rejete {
-  background-color: rgba(143, 6, 6, 0.671);
+  background-color: #ff686b;
 }
 .complique {
-  background-color: rgba(56, 64, 180, 0.534);
+  background-color: #90bede;
 }
 
 .button {
